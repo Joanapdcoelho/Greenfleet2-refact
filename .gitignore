@@ -1,0 +1,38 @@
+# Eclipse / Anypoint Studio (workspace)
+.metadata/
+.recommenders/
+RemoteSystemsTempFiles/
+*.log
+
+# Mule build output
+target/
+**/target/
+
+# Eclipse / Anypoint project files
+.project
+.classpath
+.settings/
+
+# Mule runtime and tooling
+.mule/
+bin/
+**/bin/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Anypoint Studio tooling e cache
+.tooling/
+**/.tooling/
+**/.anypointstudio/
+**/.mule-runtime/
+
+# Mule Designer e ficheiros gerados
+*/.wev
+*/.bak
+*/.tmp
+
+# Anypoint local runtime downloads
+**/.mule-soft/
+*.wev
