@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="xapi-greenfleet-accounts-maintenance-test-suite.xml" />
+	<munit:test name="xapi-greenfleet-accounts-maintenance-test-suite-post:\account:application\json:greenfleet-configTest" doc:id="791d33fd-ffb5-4d69-90ea-15a6211ee1ec" description="Test" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="de108acb-4ce8-4b87-a6df-6a9849e43932" >
+				<munit:payload value='#[[&#10;    {&#10;        "id": "A001",&#10;        "name": "GreenFleet Solutions",&#10;        "industry": "Fleet Management",&#10;        "country": "Portugal",&#10;        "vehicles": [&#10;            {&#10;                "id": "V101",&#10;                "brand": "Tesla",&#10;                "model": "Model 3",&#10;                "status": "available"&#10;            },&#10;            {&#10;                "id": "V102",&#10;                "brand": "Nissan",&#10;                "model": "Leaf",&#10;                "status": "in maintenance"&#10;            }&#10;        ]&#10;    },&#10;    {&#10;        "id": "A002",&#10;        "name": "EcoMove Logistics",&#10;        "industry": "Transportation",&#10;        "country": "Spain",&#10;        "vehicles": [&#10;            {&#10;                "id": "V103",&#10;                "brand": "Renault",&#10;                "model": "Zoe",&#10;                "status": "reserved"&#10;            },&#10;            {&#10;                "id": "V104",&#10;                "brand": "BMW",&#10;                "model": "i3",&#10;                "status": "available"&#10;            }&#10;        ]&#10;    }&#10;    ]]' />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8f58b254-890f-4e6c-8731-84438875287f" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f0bbbc5a-a0cd-4262-a21b-579199eb1f6b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\account:application\json:greenfleet-config" doc:id="9a50d45b-fb26-4176-86ea-b1214e789b1b" name="post:\account:application\json:greenfleet-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="354ec399-5e4b-42c4-bc42-1276b70273ad" actual="#[payload]" expected='#[output application/json&#10;---&#10;{&#10;  message: "Contas adicionas com Sucesso"&#10;} as Object {encoding: "UTF-8", mediaType: "application/json"}]' />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="papi-greenfleet-accounts-maintenance-test-suite.xml" />
+	<munit:test name="papi-greenfleet-accounts-maintenance-test-suite-get:\account:greenfleetprocess-configTest" doc:id="af1c97bc-c24e-415d-9ce7-5755e1f1ba92" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="00beee7b-bab6-4f29-9563-cb3e231d91d4" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b0640c33-114e-4f9b-b4b6-942709c0212a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[ {&#10;        "id": "A001",&#10;        "name": "GreenFleet Solutions",&#10;        "industry": "Fleet Management",&#10;        "country": "Portugal",&#10;        "vehicles": [&#10;            {&#10;                "id": "V101",&#10;                "brand": "Tesla",&#10;                "model": "Model 3",&#10;                "status": "available"&#10;            }&#10;        ]&#10;    }&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\account:greenfleetprocess-config" doc:id="5604baa0-4339-422e-82c7-3cdb95a43a8c" name="get:\account:greenfleetprocess-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="62807644-d649-4175-85be-808056bbb55a" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="papi-greenfleet-accounts-maintenance-test-suite-post:\maintenance:application\json:greenfleetprocess-configTest" doc:id="de61519e-0015-4161-aa35-0f9ff09b9203" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="2a1f8787-aa04-4527-83ca-03c0dac25499" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="7ffce77f-3c5c-4083-b463-0a421781d404" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output applicaltion/json ---&#10;{&#10;	message: "Maintenance criada"&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<set-payload value='#[output application/json ---&#10;{&#10;        "id": "M501",&#10;        "vehicleId": "V102",&#10;        "description": "Battery check",&#10;        "date": "2025-11-20",&#10;        "status": "scheduled"&#10;    }]' doc:name="Set Payload" doc:id="f78af5fa-e8b4-41f1-bf56-10447a03646d" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\maintenance:application\json:greenfleetprocess-config" doc:id="ee46f136-deef-4a5c-87fa-1103d2d87e0b" name="post:\maintenance:application\json:greenfleetprocess-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="185e2f01-b257-4171-b089-cf407de7e185" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="papi-greenfleet-accounts-maintenance-test-suite-get:\account\(ID)\vehicles:greenfleetprocess-configTest" doc:id="75e158dd-6bd8-48f0-adf2-14f2076c9280" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="08d51339-9929-494a-9bb1-2efa299313c8" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="774a639a-190c-4159-8f13-f88856c92791" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;            {&#10;                "id": "V101",&#10;                "brand": "Tesla",&#10;                "model": "Model 3",&#10;                "status": "available"&#10;            },&#10;            {&#10;                "id": "V102",&#10;                "brand": "Nissan",&#10;                "model": "Leaf",&#10;                "status": "in maintenance"&#10;            }&#10;        ]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\account\(ID)\vehicles:greenfleetprocess-config" doc:id="3ccf5aa3-97db-45cc-8927-2f9e9047cf5e" name="get:\account\(ID)\vehicles:greenfleetprocess-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="26f20497-6bad-43ae-9655-a7385096cb2d" is="#[MunitTools::equalTo(2)]" expression="#[sizeOf(payload)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="papi-greenfleet-accounts-maintenance-test-suite-get:\account\(ID):greenfleetprocess-configTest" doc:id="4a812b5b-7199-4f34-b163-44b216a8bdd5" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6236583b-2044-4b0d-8c9a-c478dfd62dc8" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f8b9f765-9eeb-4ed9-ab87-230ccc915604" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;        "id": "A001",&#10;        "name": "GreenFleet Solutions",&#10;        "industry": "Fleet Management",&#10;        "country": "Portugal",&#10;        }]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\account\(ID):greenfleetprocess-config" doc:id="8eab7f34-aacf-420a-b55f-dd6ca7b32641" name="get:\account\(ID):greenfleetprocess-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a8a37e89-7178-4438-bc40-cb0d374022bf" is='#[MunitTools::equalTo("A001")]' expression="#[payload.id]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="papi-greenfleet-accounts-maintenance-test-suite-post:\account:application\json:greenfleetprocess-configTest" doc:id="e4978231-63e6-4f0a-a43b-e6aa66dc3d33" description="Test">
+		<munit:behavior >
+			<set-payload value='#[{&#10;  "id": "A007",&#10;  "name": "GreenFleet Solutions",&#10;  "industry": "Fleet Management",&#10;  "country": "Portugal",&#10;  "vehicles": [&#10;    {&#10;      "id": "V10321",&#10;      "brand": "Tesla",&#10;      "model": "Model 3",&#10;      "status": "available"&#10;    }&#10;  ]&#10;}]' doc:name="Set Payload" doc:id="538666c9-3d9c-4d82-b182-75ae7b61d9a8" />
+			<munit-tools:mock-when doc:name="Mock when" doc:id="04626abc-9ce3-457a-b4d3-0dad38746259" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b0640c33-114e-4f9b-b4b6-942709c0212a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;  {&#10;    "id": "A001",&#10;    "name": "GreenFleet Solutions",&#10;    "industry": "Fleet Management",&#10;    "country": "Portugal",&#10;    "vehicle_id": "V101",&#10;    "brand": "Tesla",&#10;    "model": "Model 3",&#10;    "status": "available"&#10;  },&#10;  {&#10;    "id": "A0e01",&#10;    "name": "GreenFleet Solutions",&#10;    "industry": "Fleet Management",&#10;    "country": "Portugal",&#10;    "vehicle_id": "V101",&#10;    "brand": "Tesla",&#10;    "model": "Model 3",&#10;    "status": "available"&#10;  }&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="354c1c57-322c-406e-869a-9bc771e8a060" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="73ecf55e-38cc-4515-9f46-fdd25f994939" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "message": "Accounts saved !",&#10;    "totalAccounts": 3&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\account:application\json:greenfleetprocess-config" doc:id="47c20d79-faae-4d6e-9e31-6e1a545092b6" name="post:\account:application\json:greenfleetprocess-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d993dcc1-9d10-4f0d-805b-70f9f8da0917" is='#[MunitTools::equalTo("Accounts saved !")]' expression='#[payload.message]'/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="78a94dc9-b324-4efe-8bdc-2cfa715ef1c8" is="#[MunitTools::equalTo(3)]" expression="#[payload.totalAccounts]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

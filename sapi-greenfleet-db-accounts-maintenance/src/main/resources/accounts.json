@@ -1,0 +1,84 @@
+[
+    {
+        "id": "A001",
+        "name": "GreenFleet Solutions",
+        "industry": "Fleet Management",
+        "country": "Portugal",
+        "vehicles": [
+            {
+                "id": "V101",
+                "brand": "Tesla",
+                "model": "Model 3",
+                "status": "available"
+            },
+            {
+                "id": "V102",
+                "brand": "Nissan",
+                "model": "Leaf",
+                "status": "in maintenance"
+            }
+        ]
+    },
+    {
+        "id": "A002",
+        "name": "EcoMove Logistics",
+        "industry": "Transportation",
+        "country": "Spain",
+        "vehicles": [
+            {
+                "id": "V103",
+                "brand": "Renault",
+                "model": "Zoe",
+                "status": "reserved"
+            },
+            {
+                "id": "V104",
+                "brand": "BMW",
+                "model": "i3",
+                "status": "available"
+            }
+        ]
+    },
+    {
+        "id": "A003",
+        "name": "UrbanDrive Services",
+        "industry": "Car Sharing",
+        "country": "France",
+        "vehicles": [
+            {
+                "id": "V105",
+                "brand": "Hyundai",
+                "model": "Kona Electric",
+                "status": "available"
+            },
+            {
+                "id": "V106",
+                "brand": "Peugeot",
+                "model": "e-208",
+                "status": "in maintenance"
+            }
+        ]
+    },
+    {
+        "id": "A005",
+        "name": "GreenFleet Solutions",
+        "industry": "Fleet Management",
+        "country": "Portugal",
+        "vehicles": [
+            {
+                "id": "V101",
+                "brand": "Tesla",
+                "model": "Model 3",
+                "status": "available"
+            },
+            {
+                "id": "V102",
+                "brand": "Nissan",
+                "model": "Leaf",
+                "status": "in maintenance"
+            }
+        ]
+    }
+    
+    
+]

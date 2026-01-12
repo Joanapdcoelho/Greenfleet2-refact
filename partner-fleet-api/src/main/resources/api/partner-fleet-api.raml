@@ -1,0 +1,33 @@
+#%RAML 1.0
+title: partner-fleet-api
+protocols:
+  - HTTP
+mediaType: 
+- application/json
+description: Simulated external API providing fleet data from a partner system
+
+types:
+  PartnerFleetData: !include types/partnerFleetData.raml  
+  PartnerAccount: !include types/partnerAccount.raml
+  PartnerVehicle: !include types/partnerVehicle.raml
+  ErrorResponse: !include types/errorResponse.raml
+  
+
+/partner-fleet-data:
+  get:
+    displayName: Get partner fleet data
+    description: Returns fleet data from external partner system
+    responses:
+      200:
+        body:
+          application/json:
+            type: PartnerFleetData
+            example: !include examples/partnerFleetData.json
+      500:
+        body:
+          application/json:
+            type: ErrorResponse
+            example: 
+              message: Internal server error
+  
+

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="xapi-greenfleet-accounts-maintenance-test-suite.xml" />
+	<munit:test name="greenfleet-implementation-test-suite-validate-idTest" doc:id="f1fc8b0c-0176-4507-afcb-077ff593a157" description="Test" expectedErrorType="VALIDATION:INVALID_BOOLEAN">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="a0ea2f59-6452-403f-b0a4-6f46840d1a38" >
+				<munit:attributes value='#[{&#10;    uriParams: {&#10;        ID: "A0010"&#10;    }&#10; }]' />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to validate-id" doc:id="8b742f2b-1e7a-4570-b022-676caed1bced" name="validate-id" />
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

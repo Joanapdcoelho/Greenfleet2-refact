@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="sapi-greenfleet-db-accounts-maintenance-test-suite.xml" />
+	<munit:test name="sapi-greenfleet-db-accounts-maintenance-test-suite-get:\account\(ID)\vehicles:greenfleetsystem-configTest" doc:id="888fd0ef-eef2-453f-97fd-f66bb0015c91" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="929f954f-271c-416c-ac1a-431e5ec3c696" >
+				<munit:attributes value='#[{&#10;    uriParams: {&#10;        ID: "A001"&#10;    }&#10; }]' />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="abaab255-c23b-4f6f-ac4c-066c7dc793c9" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f6484fe7-b6d4-4227-b502-eaa02636dd7e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[readUrl ('classpath://vehicles.json')]" mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\account\(ID)\vehicles:greenfleetsystem-config" doc:id="43eab6b3-83ce-4dc3-89bd-f7dde4dacb40" name="get:\account\(ID)\vehicles:greenfleetsystem-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="c9002f02-ce2f-4d67-b12a-17a2ed69a981" expression="#[payload]" is='#[import * from dw::test::Asserts &#10; ---&#10;payload must equalToResource("vehicles.json", "application/json")]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="sapi-greenfleet-db-accounts-maintenance-test-suite-get:\account\(ID)\vehicles:greenfleetsystem-configTest-unsuccess1" doc:id="8c54f9c6-e382-4640-a4d3-e10c8ea8dbe1" description="Test" expectedErrorType="APP:INVALID_ACCOUNT">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="a9fcda3d-9e39-4f1c-aef5-05ad2e79194f" >
+				<munit:attributes value='#[{&#10;    uriParams: {&#10;        ID: "A001"&#10;    }&#10; }]' />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0f0038d8-d4bd-48c6-83c5-3e920086228a" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f6484fe7-b6d4-4227-b502-eaa02636dd7e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\account\(ID)\vehicles:greenfleetsystem-config" doc:id="9b5b7ad8-f6f3-410f-a8cd-c2932dd395db" name="get:\account\(ID)\vehicles:greenfleetsystem-config" />
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

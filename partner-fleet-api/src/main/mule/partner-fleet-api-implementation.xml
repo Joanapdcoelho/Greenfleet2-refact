@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	
+	<flow name="getPartnerAccount" doc:id="3872f85a-5990-4d9d-bba1-1bf4b7cdbe3c" >
+		<logger level="INFO" doc:name="Logger" doc:id="609e75d7-d3aa-442e-a013-e4011a41a6fe" />
+		<ee:transform doc:name="Transform Message" doc:id="c332e128-a50e-478f-8d84-564123c46a95">
+			<ee:message>
+				<ee:set-payload><![CDATA[
+%dw 2.0
+output application/json
+---
+readUrl("classpath://partnerFleetData.json", "application/json")
+ 
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="84cfef02-b747-4526-bd08-5d2b3f9da4b9" message="#[payload]"/>
+		<http:request doc:name="Request" doc:id="f841566e-6bc4-46d9-8109-f04c393f993c" path="/api/partner-accounts"/>
+	
+</flow>
+	
+	
+	
+	
+	</mule>

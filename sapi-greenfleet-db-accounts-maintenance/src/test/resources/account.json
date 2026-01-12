@@ -1,0 +1,10 @@
+{
+        "id": "A001",
+        "name": "GreenFleet Solutions",
+        "industry": "Fleet Management",
+        "country": "Portugal",
+        "vehicles_id": "V101",
+        "brand": "Tesla",
+        "model": "Model 3",
+        "status": "available"
+}
