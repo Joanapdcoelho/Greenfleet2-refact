@@ -135,16 +135,6 @@ output application/json
         <flow-ref doc:name="postMaintenance" doc:id="b08a7864-1e61-4fa5-ae8f-7e98796e1fc9" name="postMaintenance" />
     </flow>
     <flow name="post:\partner-accounts:application\json:greenfleetsystem-config">
-        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-{
-  message: "Partner accounts stored successfully"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
-            </ee:message>
-        </ee:transform> [STUDIO] -->
-		<flow-ref doc:name="Flow Reference" doc:id="f071ecb3-7280-4016-b425-63e472598ed1" name="PostPartnerAccounts"/>
+		<flow-ref doc:name="PostPartnerAccounts" doc:id="f071ecb3-7280-4016-b425-63e472598ed1" name="PostPartnerAccounts"/>
     </flow>
 </mule>

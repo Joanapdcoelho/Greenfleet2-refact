@@ -185,7 +185,6 @@ if (payload is Array) payload
 else [payload]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<!-- [STUDIO:"Logger"]<logger level="INFO" doc:name="Logger" doc:id="4eff3f7e-0147-4512-ac80-c633f2a8b8d0" message='#[write(payload, "application/json")&#93;'/> [STUDIO] -->
 		<foreach doc:name="For Each" doc:id="4f2b1da6-6726-476f-b641-8f4269ac6e05" collection="#[payload]">
 			<db:insert doc:name="Insert" doc:id="eac84f67-d652-4773-977b-f2cca5584295" config-ref="Database_Config">
 			<db:sql><![CDATA[INSERT INTO accounts
