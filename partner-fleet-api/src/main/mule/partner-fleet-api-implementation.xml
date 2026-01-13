@@ -8,6 +8,12 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
 	
+	<http:request-config name="HTTP_Request_config" doc:name="HTTP Request config" doc:id="8459368c-9f8d-4bef-9d2f-abd5083703f9" >
+		<http:request-connection protocol="HTTPS" port="8085" />
+	</http:request-config>
+	<http:request-config name="HTTPpapi" doc:name="HTTP Request config" doc:id="56a41e20-e380-4260-978c-9d07f8160760" >
+		<http:request-connection host="0.0.0.0" port="8082" />
+	</http:request-config>
 	<flow name="getPartnerAccount" doc:id="3872f85a-5990-4d9d-bba1-1bf4b7cdbe3c" >
 		<logger level="INFO" doc:name="Logger" doc:id="609e75d7-d3aa-442e-a013-e4011a41a6fe" />
 		<ee:transform doc:name="Transform Message" doc:id="c332e128-a50e-478f-8d84-564123c46a95">
@@ -22,9 +28,12 @@ readUrl("classpath://partnerFleetData.json", "application/json")
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="84cfef02-b747-4526-bd08-5d2b3f9da4b9" message="#[payload]"/>
-		<http:request doc:name="Request" doc:id="f841566e-6bc4-46d9-8109-f04c393f993c" path="/api/partner-accounts"/>
+		<http:request doc:name="Request" doc:id="f841566e-6bc4-46d9-8109-f04c393f993c" config-ref="HTTP_Request_config" path="/api/partner-accounts"/>
 	
 </flow>
+	<sub-flow name="PostPartnerAccount" doc:id="07e30a55-955f-4f4b-99ba-1be1d708fcf8" >
+		<http:request doc:name="Request" doc:id="45d8fd4b-4f3b-4d02-89d5-292ab07ffab5" config-ref="HTTPpapi" path="/api/partner-accounts"/>
+	</sub-flow>
 	
 	
 	
