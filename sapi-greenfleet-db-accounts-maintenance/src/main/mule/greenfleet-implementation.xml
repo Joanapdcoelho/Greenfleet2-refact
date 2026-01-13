@@ -174,4 +174,48 @@ VALUES (:id, :vehicleId, :description, :date, :status);]]></db:sql>
 			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
 		</db:insert>
 	</flow>
+	<flow name="PostPartnerAccounts" doc:id="00713559-ea8f-418e-be69-ccd8439ebb04" >
+		<logger level="INFO" doc:name="Logger" doc:id="0cf1b06a-f703-4331-8504-a784f2ddca3a" message= "SAPI POST /partner-accounts received. " />
+		<ee:transform doc:name="Normalize payload to DB" doc:id="5c535bd0-ceb0-4634-9c83-09f8befba77f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+if (payload is Array) payload
+else [payload]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<!-- [STUDIO:"Logger"]<logger level="INFO" doc:name="Logger" doc:id="4eff3f7e-0147-4512-ac80-c633f2a8b8d0" message='#[write(payload, "application/json")&#93;'/> [STUDIO] -->
+		<foreach doc:name="For Each" doc:id="4f2b1da6-6726-476f-b641-8f4269ac6e05" collection="#[payload]">
+			<db:insert doc:name="Insert" doc:id="eac84f67-d652-4773-977b-f2cca5584295" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO accounts
+(id, name, industry, country, vehicle_id, brand, model, status)
+VALUES
+(:id, :name, :industry, :country, :vehicle_id, :brand, :model, :status)
+]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+  id: payload.id,
+  name: payload.name,
+  industry: payload.industry,
+  country: payload.country,
+  vehicle_id: payload.vehicle_id,
+  brand: payload.brand,
+  model: payload.model,
+  status: payload.status
+}]]]></db:input-parameters>
+		</db:insert>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="51eee8b6-4b34-479f-be43-c96338e72ad1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Partner accounts inserted successfully", 
+	insertedRecords: sizeOf(payload)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		
+	</flow>
 </mule>
