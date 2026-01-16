@@ -27,13 +27,8 @@ readUrl("classpath://partnerFleetData.json", "application/json")
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="84cfef02-b747-4526-bd08-5d2b3f9da4b9" message="#[payload]"/>
-		<http:request doc:name="Request" doc:id="f841566e-6bc4-46d9-8109-f04c393f993c" config-ref="HTTP_Request_config" path="/api/partner-accounts"/>
 	
 </flow>
-	<sub-flow name="PostPartnerAccount" doc:id="07e30a55-955f-4f4b-99ba-1be1d708fcf8" >
-		<http:request doc:name="Request" doc:id="45d8fd4b-4f3b-4d02-89d5-292ab07ffab5" config-ref="HTTPpapi" path="/api/partner-accounts"/>
-	</sub-flow>
 	
 	
 	

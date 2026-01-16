@@ -3,7 +3,7 @@
     <http:listener-config name="partner-fleet-api-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8085" />
     </http:listener-config>
-    <apikit:config name="partner-fleet-api-config" api="resource::8447f95a-7ec8-4e54-affa-1ffc93d1beaf:partner-fleet-api:1.0.1:raml:zip:partner-fleet-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="partner-fleet-api-config" api="resource::8447f95a-7ec8-4e54-affa-1ffc93d1beaf:partner-fleet-api:1.0.2:raml:zip:partner-fleet-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="partner-fleet-api-main">
         <http:listener path="/api/*" config-ref="partner-fleet-api-httpListenerConfig">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -124,11 +124,11 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\partner-fleet-data:partner-fleet-api-config">
-        <!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message">
+        <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
-&#45;&#45;-
+---
 {
   fleetData: [
     {
@@ -150,7 +150,7 @@ output application/json
           currentState: "maintenance",
           lastService: "2025-11-10"
         }
-      &#93;
+      ]
     }, 
     {
       client_code: "C-790",
@@ -164,25 +164,15 @@ output application/json
           currentState: "reserved",
           lastService: "2025-11-12"
         }
-      &#93;
+      ]
     }
-  &#93;
-} as Object {encoding: "UTF-8", mediaType: "application/json"}&#93;&#93;></ee:set-payload>
-            </ee:message>
-        </ee:transform> [STUDIO] -->
-        <flow-ref doc:name="Flow Reference" doc:id="75eb5273-7fd7-4bdd-a03f-95cc3bc2d67b" name="getPartnerAccount" />
-    </flow>
-    <flow name="post:\partner-fleet-data:application\json:partner-fleet-api-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Partner data received successfully"
+  ]
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="c889658b-b637-478a-b2d5-4451224d5a97" name="PostPartnerAccount"/>
+        <flow-ref doc:name="Flow Reference" doc:id="75eb5273-7fd7-4bdd-a03f-95cc3bc2d67b" name="getPartnerAccount" />
+    </flow>
+    <flow name="post:\partner-fleet-data:application\json:partner-fleet-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="48400e84-0b93-48a4-ab58-5459c4222cfc" />
     </flow>
 </mule>

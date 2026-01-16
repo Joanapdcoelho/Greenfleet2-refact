@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
-    
     <flow name="greenfleet-main">
-        <http:listener config-ref="greenfleet-httpListenerConfig" path="/api/*">
+        <http:listener config-ref="xapiGreenfleetHttpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="greenfleet-config" />
@@ -91,29 +90,29 @@ output application/json
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2d49fc88-e7b1-40d2-8ed3-e292c5174f3a" type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-				<ee:transform doc:name="Transform Message" doc:id="721b252c-5385-4342-8092-168384f63281" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
+            <on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2d49fc88-e7b1-40d2-8ed3-e292c5174f3a" type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform doc:name="Transform Message" doc:id="721b252c-5385-4342-8092-168384f63281">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {message: "Unsupported media type"}]]></ee:set-payload>
-					</ee:message>
-					<ee:variables >
-						<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
-					</ee:variables>
-				</ee:transform>
-			</on-error-continue>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-continue>
         </error-handler>
     </flow>
     <flow name="greenfleet-console">
-        <http:listener config-ref="greenfleet-httpListenerConfig" path="/console/*">
+        <http:listener config-ref="xapiGreenfleetHttpListenerConfig" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="greenfleet-config" />
@@ -134,18 +133,18 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\account:greenfleet-config" doc:id="02ea9bf6-8ec4-4559-a52d-d24a949b644f">
-		<flow-ref doc:name="getAccount" doc:id="44534d46-7827-4976-b7a8-893286972c1e" name="getAccount"/>
+        <flow-ref doc:name="getAccount" doc:id="44534d46-7827-4976-b7a8-893286972c1e" name="getAccount" />
     </flow>
     <flow name="get:\account\(ID):greenfleet-config">
         <flow-ref doc:name="getAccount\(ID)" doc:id="65ad2888-b2cc-4a7a-bc1c-321776330041" name="getAccount\(ID)" />
     </flow>
-	<flow name="get:\account\(ID)\vehicles:greenfleet-config">
-        <flow-ref doc:name="getAccount\(ID)\vehicles" doc:id="4971b0b5-8ebe-45aa-b500-3efd5a5c8bf5" name="getAccount\(ID)\vehicles"/>
+    <flow name="get:\account\(ID)\vehicles:greenfleet-config">
+        <flow-ref doc:name="getAccount\(ID)\vehicles" doc:id="4971b0b5-8ebe-45aa-b500-3efd5a5c8bf5" name="getAccount\(ID)\vehicles" />
     </flow>
     <flow name="post:\account:application\json:greenfleet-config">
-		<flow-ref doc:name="postAccount" doc:id="2119bb3a-e0db-4a7d-bbc3-b01af8769f0b" name="postAccount"/>
+        <flow-ref doc:name="postAccount" doc:id="2119bb3a-e0db-4a7d-bbc3-b01af8769f0b" name="postAccount" />
     </flow>
     <flow name="post:\maintenence:application\json:greenfleet-config">
-		<flow-ref doc:name="postMaintenance" doc:id="9a6a548e-1afc-4acc-8d14-a706b0b18c6f" name="postMaintenance"/>
+        <flow-ref doc:name="postMaintenance" doc:id="9a6a548e-1afc-4acc-8d14-a706b0b18c6f" name="postMaintenance" />
     </flow>
 </mule>
