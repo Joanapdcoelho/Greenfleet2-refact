@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
 	<flow name="getAccount" doc:id="638797ae-be44-40ca-b65a-aba4d38fc37e" >
 		<logger level="INFO" doc:name="Logger" doc:id="d8a767e9-3202-49f8-aee7-5219eb81be7a" message="get:\dataBaseAccount:greenfleetsystem-config" />
 		<db:select doc:name="Select" doc:id="eb431969-9519-4903-ad16-785044d361f8" config-ref="Database_Config" >
@@ -216,6 +217,57 @@ output application/json
       ]]></ee:set-payload>
     </ee:message>
   </ee:transform>
-
 </flow>
+
+
+<flow name="weeklyMaintenanceCsvImplement" doc:id="3b460c05-e947-455b-bff1-426e8ce20282">
+  <!-- Caminho com / e / no fim para facilitar concatenação -->
+  <set-variable variableName="outputDir" value="C:/Github/Greenfleet2-refact/reports/" doc:name="outputDir"/>
+  <set-variable variableName="fileName" value='#["maintenance_" ++ (now() as String {format: "yyyy-MM-dd"}) ++ ".csv"]' doc:name="fileName"/>
+  <set-variable variableName="reportDate" value='#[now() as String {format: "yyyy-MM-dd"}]' doc:name="reportDate"/>
+
+  <set-variable value="#[vars.outputDir ++ vars.fileName]" doc:name="Set Variable" doc:id="453a53e8-d9db-43f0-ae28-aade134d1a79" variableName="fullPath"/>
+		<db:select doc:name="Select" config-ref="Database_Config">
+    <db:sql><![CDATA[SELECT 
+  a.vehicle_id AS vehicleId,
+  a.brand AS brand,
+  a.model AS model,
+  m.status AS status,
+  m.date AS lastService
+  FROM accounts a
+    JOIN maintenance m ON m.vehicleId = a.vehicle_id
+      WHERE m.status IN ('maintenance', 'in maintenance')
+      ORDER BY a.vehicle_id
+      ]]>
+    </db:sql>
+  </db:select>
+
+  <ee:transform doc:name="Transform Message">
+    <ee:message>
+      <ee:set-payload><![CDATA[%dw 2.0
+output application/csv
+header = true
+---
+payload map (row) -> {
+  vehicleId: row.vehicleId,
+  brand: row.brand,
+  model: row.model,
+  status: row.status,
+  lastService: row.lastService
+}]]></ee:set-payload>
+    </ee:message>
+  </ee:transform>
+
+  <!-- usa directory + fileName e cria diretórios se não existirem -->
+  <file:write
+    doc:name="Write"
+    directory="#[vars.outputDir]"
+    fileName="#[vars.fileName]"
+    path="#[vars.fullPath]"/>
+
+  <logger level="INFO" doc:name="FicheiroGerado"
+          message='#["CSV gerado em" ++ vars.outputDir ++ vars.fileName ++ "com" ++ sizeOf(payload) as String ++ "caracteres"]'/>
+</flow>
+
+	
 </mule>
