@@ -170,7 +170,6 @@ output application/json
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-        <flow-ref doc:name="Flow Reference" doc:id="75eb5273-7fd7-4bdd-a03f-95cc3bc2d67b" name="getPartnerAccount" />
     </flow>
     <flow name="post:\partner-fleet-data:application\json:partner-fleet-api-config">
         <logger level="INFO" doc:name="Logger" doc:id="48400e84-0b93-48a4-ab58-5459c4222cfc" />
