@@ -221,13 +221,12 @@ output application/json
 
 
 <flow name="weeklyMaintenanceCsvImplement" doc:id="3b460c05-e947-455b-bff1-426e8ce20282">
-  <!-- Caminho com / e / no fim para facilitar concatenação -->
-  <set-variable variableName="outputDir" value="C:/Github/Greenfleet2-refact/reports/" doc:name="outputDir"/>
-  <set-variable variableName="fileName" value='#["maintenance_" ++ (now() as String {format: "yyyy-MM-dd"}) ++ ".csv"]' doc:name="fileName"/>
+		<set-variable variableName="outputDir" value="C:/Github/Greenfleet2-refact/reports/" doc:name="outputDir"/>
+  <set-variable variableName="fileName" value='#["maintenance_" ++ (now() as String {format: "yyyy-MM-dd_HH-mm-ss"}) ++ ".csv"]' doc:name="fileName"/>
   <set-variable variableName="reportDate" value='#[now() as String {format: "yyyy-MM-dd"}]' doc:name="reportDate"/>
 
-  <set-variable value="#[vars.outputDir ++ vars.fileName]" doc:name="Set Variable" doc:id="453a53e8-d9db-43f0-ae28-aade134d1a79" variableName="fullPath"/>
-		<db:select doc:name="Select" config-ref="Database_Config">
+  <set-variable value="#[vars.outputDir ++ vars.fileName]" doc:name="fullPath" doc:id="453a53e8-d9db-43f0-ae28-aade134d1a79" variableName="fullPath"/>
+		<db:select doc:name="accounts and maintenance" config-ref="Database_Config">
     <db:sql><![CDATA[SELECT 
   a.vehicle_id AS vehicleId,
   a.brand AS brand,
@@ -236,8 +235,8 @@ output application/json
   m.date AS lastService
   FROM accounts a
     JOIN maintenance m ON m.vehicleId = a.vehicle_id
-      WHERE m.status IN ('maintenance', 'in maintenance')
-      ORDER BY a.vehicle_id
+      WHERE m.status IN ('maintenance', 'in progress', 'in maintenance')
+      ORDER BY a.vehicle_id ASC;
       ]]>
     </db:sql>
   </db:select>
@@ -245,8 +244,8 @@ output application/json
   <ee:transform doc:name="Transform Message">
     <ee:message>
       <ee:set-payload><![CDATA[%dw 2.0
-output application/csv
-header = true
+output application/csv 
+header=true, separator=";" 
 ---
 payload map (row) -> {
   vehicleId: row.vehicleId,
@@ -257,16 +256,9 @@ payload map (row) -> {
 }]]></ee:set-payload>
     </ee:message>
   </ee:transform>
-
-  <!-- usa directory + fileName e cria diretórios se não existirem -->
-  <file:write
-    doc:name="Write"
-    directory="#[vars.outputDir]"
-    fileName="#[vars.fileName]"
-    path="#[vars.fullPath]"/>
-
-  <logger level="INFO" doc:name="FicheiroGerado"
-          message='#["CSV gerado em" ++ vars.outputDir ++ vars.fileName ++ "com" ++ sizeOf(payload) as String ++ "caracteres"]'/>
+    
+  <file:write doc:name="Write" config-ref="File_Config" path="#[vars.fullPath]">
+</file:write>
 </flow>
 
 	

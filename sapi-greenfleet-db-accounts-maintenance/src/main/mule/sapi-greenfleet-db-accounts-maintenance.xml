@@ -140,7 +140,7 @@ output application/json
 	<flow name="weeklyMaintenanceCsvMain" doc:id="6245697d-c581-4b2f-ad26-c7abb35518a0" >
 		<scheduler doc:name="Scheduler" doc:id="17c74b8f-2428-4f6f-b1a0-37abfc3d9654" >
 			<scheduling-strategy >
-				<fixed-frequency />
+				<cron expression="0 0 9 ? * SUN" timeZone="Europe/Lisbon" />
 			</scheduling-strategy>
 		</scheduler>
 		<flow-ref doc:name="weeklyMaintenanceCsv" doc:id="16833a85-23e5-4c63-99a0-7db706cb5195" name="weeklyMaintenanceCsvImplement"/>
