@@ -1,84 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
-	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
-http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
-	<flow name="getAccount" doc:id="638797ae-be44-40ca-b65a-aba4d38fc37e" >
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="3edaec97-d616-4d7b-8a33-fd6d1850d82a">
+		<vm:queues >
+			<vm:queue queueName="welcome-new-account" />
+		</vm:queues>
+	</vm:config>
+
+
+<sub-flow name="getAccount" doc:id="7be970cc-3575-4207-8c72-c6a25198699d" >
 		<logger level="INFO" doc:name="Logger" doc:id="d8a767e9-3202-49f8-aee7-5219eb81be7a" message="get:\dataBaseAccount:greenfleetsystem-config" />
-		<db:select doc:name="Select" doc:id="eb431969-9519-4903-ad16-785044d361f8" config-ref="Database_Config" >
-			<db:sql ><![CDATA[SELECT * FROM Accounts]]></db:sql>
+		<db:select doc:name="Select" doc:id="eb431969-9519-4903-ad16-785044d361f8" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT * FROM Accounts]]></db:sql>
 		</db:select>
 		<validation:is-true doc:name="Is not empty" doc:id="41511c22-e488-4a53-b4ae-0e114f5d1aa4" expression="#[!isEmpty(payload)]" message='"Não existem contas"'>
 			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
 		</validation:is-true>
-		<ee:transform doc:name="Transform Message" doc:id="83298bbc-fe56-4c5d-af3b-fdc9108fe052" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="83298bbc-fe56-4c5d-af3b-fdc9108fe052">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2da8102b-d3e8-4bd0-9163-d07798f53c0a" type="APP:INVALID_ACCOUNT">
-				<ee:transform doc:name="Transform Message" doc:id="63ffbdcf-1f95-467e-a6b2-b557535920e5" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"message": "Não há contas criadas"
-}]]></ee:set-payload>
-					</ee:message>
-					<ee:variables >
-						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
-					</ee:variables>
-				</ee:transform>
-			</on-error-propagate>
-		</error-handler>
-	</flow>
-	<flow name="getAccount\(ID)" doc:id="67ec4cce-e129-461b-b1c9-668fd118dbc9" >
+	</sub-flow>
+	<sub-flow name="getAccount\(ID)" doc:id="14228331-5f6c-463b-addb-6d94f16c65e9" >
 		<logger level="INFO" doc:name="Logger" doc:id="fbd3ac87-18cf-4b1d-8bcd-38ff7054ac9c" message="get:\dataBaseAccount:greenfleetsystem-config" />
-		<db:select doc:name="Select" doc:id="f65196a3-e4f5-46ed-958e-e8836c8f0cf7" config-ref="Database_Config" >
-			<db:sql ><![CDATA[SELECT * 
+		<db:select doc:name="Select" doc:id="f65196a3-e4f5-46ed-958e-e8836c8f0cf7" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT * 
 FROM accounts
 WHERE id = :id;]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{ id: attributes.uriParams.ID }]]]></db:input-parameters>
+			<db:input-parameters><![CDATA[#[{ id: attributes.uriParams.ID }]]]></db:input-parameters>
 		</db:select>
 		<validation:is-true doc:name="Is not empty" doc:id="14975bb8-5835-4456-87a7-f8ebdb3b266f" expression="#[!isEmpty(payload)]" message='"Não existem contas"'>
 			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
 		</validation:is-true>
-		<ee:transform doc:name="Transform Message" doc:id="6f5c0464-de83-4139-8e9e-508ffaa0834d" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="6f5c0464-de83-4139-8e9e-508ffaa0834d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b4cf4a50-c762-40dd-89e1-31957a37e5cd" type="APP:INVALID_ACCOUNT">
-				<ee:transform doc:name="Transform Message" doc:id="f844ce6f-9374-4fc7-8a65-d183cdfee06b">
-					<ee:message>
-						<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-	"message": "Não existe conta com o ID inserido"
-}]]></ee:set-payload>
-					</ee:message>
-					<ee:variables>
-						<ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
-					</ee:variables>
-				</ee:transform>
-			</on-error-propagate>
-		</error-handler>
-	</flow>
-	<flow name="getAccount\(ID)\vehicles" doc:id="28dba841-3a35-4c72-b696-9a681480b88b">
+	</sub-flow>
+	<sub-flow name="getAccount\(ID)\vehicles" doc:id="f4144ecf-19c3-44f9-9e00-29be17a39821" >
 		<logger level="INFO" doc:name="Logger" doc:id="31a81cf1-322c-4bc7-bc7b-cd478f68224d" message="#[payload]" />
 		<db:select doc:name="Select" doc:id="f6484fe7-b6d4-4227-b502-eaa02636dd7e" config-ref="Database_Config">
 			<db:sql><![CDATA[SELECT vehicle_id, brand, model, status
@@ -104,29 +80,12 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<error-handler>
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="615f7ed7-5592-468c-8f00-05436b04acd8" type="APP:INVALID_ACCOUNT">
-				<ee:transform doc:name="Transform Message" doc:id="3e9d9872-7540-46e4-820b-c38ebdd62be6">
-					<ee:message>
-						<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-	"message": "Não existem veiculos"
-}]]></ee:set-payload>
-					</ee:message>
-					<ee:variables>
-						<ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
-					</ee:variables>
-				</ee:transform>
-			</on-error-propagate>
-		</error-handler>
-	</flow>
-	<flow name="postAccount" doc:id="7f2d9c89-37a2-4a21-be34-f8e831d48382" >
+	</sub-flow>
+	<sub-flow name="postAccount" doc:id="c4f86bcc-ffe2-4fd1-8826-23fdc6de06a9" >
 		<logger level="INFO" doc:name="Logger" doc:id="d8afba64-02f5-4a35-9194-b51da727b175" />
-		<ee:transform doc:name="Transform Message" doc:id="bbc325fd-ffeb-44ec-b28d-6488e45d48c7" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="bbc325fd-ffeb-44ec-b28d-6488e45d48c7">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 vars.info flatMap ((company) ->
@@ -143,16 +102,16 @@ vars.info flatMap ((company) ->
 )]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<db:bulk-insert doc:name="Bulk insert" doc:id="a91f7952-0ad9-4dc2-a75b-266304143404" config-ref="Database_Config" >
-			<db:sql ><![CDATA[INSERT INTO accounts (id, name, industry, country, vehicle_id, brand, model, status)
+		<db:bulk-insert doc:name="Bulk insert" doc:id="a91f7952-0ad9-4dc2-a75b-266304143404" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO accounts (id, name, industry, country, vehicle_id, brand, model, status)
 VALUES (:id, :name, :industry, :country, :vehicle_id, :brand, :model, :status);]]></db:sql>
 		</db:bulk-insert>
-	</flow>
-	<flow name="postMaintenance" doc:id="d3ece6f6-c4c1-4df9-aa7e-95082acb2c67" >
+	</sub-flow>
+	<sub-flow name="postMaintenance" doc:id="1e8c6c52-5329-4df4-8b74-31a9289a63eb" >
 		<logger level="INFO" doc:name="Logger" doc:id="43dad27d-1ce6-4741-bd31-48cb97cc5234" />
-		<ee:transform doc:name="Transform Message" doc:id="358db3e1-686c-4d11-9fb7-b5ed37a5a179" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="358db3e1-686c-4d11-9fb7-b5ed37a5a179">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
 {
@@ -164,22 +123,16 @@ output application/java
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<db:insert doc:name="Insert" doc:id="6e4f2583-9382-466b-93ab-d16a57152cf6" config-ref="Database_Config" >
-			<db:sql ><![CDATA[INSERT INTO maintenance (id, vehicleId, description, date, status)
+		<db:insert doc:name="Insert" doc:id="6e4f2583-9382-466b-93ab-d16a57152cf6" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO maintenance (id, vehicleId, description, date, status)
 VALUES (:id, :vehicleId, :description, :date, :status);]]></db:sql>
-			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
 		</db:insert>
-	</flow>
-	<flow name="PostPartnerAccounts">
-		<set-variable
-    variableName="accountsRows"
-    value="#[payload.accountsRows default []]" />
-
-  <set-variable
-    variableName="maintenanceRows"
-    value="#[payload.maintenanceRows default []]" />
-
-  <db:bulk-insert doc:name="Insert Accounts" config-ref="Database_Config">
+	</sub-flow>
+	<sub-flow name="PostPartnerAccounts" doc:id="34290521-9e52-457d-9d31-dc9e08490af8" >
+		<set-variable variableName="accountsRows" value="#[payload.accountsRows default []]" />
+		<set-variable variableName="maintenanceRows" value="#[payload.maintenanceRows default []]" />
+		<db:bulk-insert doc:name="Insert Accounts" config-ref="Database_Config">
     <db:bulk-input-parameters><![CDATA[
       #[vars.accountsRows]
     ]]></db:bulk-input-parameters>
@@ -190,8 +143,7 @@ VALUES
 (:id, :name, :industry, :country, :vehicle_id, :brand, :model, :status)
     ]]></db:sql>
   </db:bulk-insert>
-
-  <db:bulk-insert doc:name="Insert Maintenance" config-ref="Database_Config">
+		<db:bulk-insert doc:name="Insert Maintenance" config-ref="Database_Config">
     <db:bulk-input-parameters><![CDATA[
       #[vars.maintenanceRows]
     ]]></db:bulk-input-parameters>
@@ -202,8 +154,7 @@ VALUES
 (:id, :vehicleId, :description, :date, :status)
     ]]></db:sql>
   </db:bulk-insert>
-
-  <ee:transform>
+		<ee:transform>
     <ee:message>
       <ee:set-payload><![CDATA[
 %dw 2.0
@@ -217,15 +168,12 @@ output application/json
       ]]></ee:set-payload>
     </ee:message>
   </ee:transform>
-</flow>
-
-
-<flow name="weeklyMaintenanceCsvImplement" doc:id="3b460c05-e947-455b-bff1-426e8ce20282">
-		<set-variable variableName="outputDir" value="C:/Github/Greenfleet2-refact/reports/" doc:name="outputDir"/>
-  <set-variable variableName="fileName" value='#["maintenance_" ++ (now() as String {format: "yyyy-MM-dd_HH-mm-ss"}) ++ ".csv"]' doc:name="fileName"/>
-  <set-variable variableName="reportDate" value='#[now() as String {format: "yyyy-MM-dd"}]' doc:name="reportDate"/>
-
-  <set-variable value="#[vars.outputDir ++ vars.fileName]" doc:name="fullPath" doc:id="453a53e8-d9db-43f0-ae28-aade134d1a79" variableName="fullPath"/>
+	</sub-flow>
+	<sub-flow name="weeklyMaintenanceCsvImplement" doc:id="0d95c161-de04-42c4-966f-6589e523e627" >
+		<set-variable variableName="outputDir" value="C:/Github/Greenfleet2-refact/reports/" doc:name="outputDir" />
+		<set-variable variableName="fileName" value='#["maintenance_" ++ (now() as String {format: "yyyy-MM-dd_HH-mm-ss"}) ++ ".csv"]' doc:name="fileName" />
+		<set-variable variableName="reportDate" value='#[now() as String {format: "yyyy-MM-dd"}]' doc:name="reportDate" />
+		<set-variable value="#[vars.outputDir ++ vars.fileName]" doc:name="fullPath" doc:id="453a53e8-d9db-43f0-ae28-aade134d1a79" variableName="fullPath" />
 		<db:select doc:name="accounts and maintenance" config-ref="Database_Config">
     <db:sql><![CDATA[SELECT 
   a.vehicle_id AS vehicleId,
@@ -240,8 +188,7 @@ output application/json
       ]]>
     </db:sql>
   </db:select>
-
-  <ee:transform doc:name="Transform Message">
+		<ee:transform doc:name="Transform Message">
     <ee:message>
       <ee:set-payload><![CDATA[%dw 2.0
 output application/csv 
@@ -256,10 +203,42 @@ payload map (row) -> {
 }]]></ee:set-payload>
     </ee:message>
   </ee:transform>
-    
-  <file:write doc:name="Write" config-ref="File_Config" path="#[vars.fullPath]">
+		<file:write doc:name="Write" config-ref="File_Config" path="#[vars.fullPath]">
 </file:write>
-</flow>
+	</sub-flow>
+	<sub-flow name="postAccounts2-implementation" doc:id="a227936d-5251-4a95-8449-ea4cf535d457" >
+		<set-variable value="#[payload]" doc:name="originalAccount" doc:id="cb575dc2-8cdc-4d10-a8f8-75c41f7e5d8b" variableName="originalAccount"/>
+		<db:insert doc:name="Insert accounts" doc:id="54eed0b1-948d-43d8-9d5d-41f39b6d1aec" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO accounts
+(id, name, industry, country, vehicle_id, brand, model, status)
+VALUES
+(:id, :name, :industry, :country, :vehicle_id, :brand, :model, :status)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+  id: payload.id,
+  name: payload.name,
+  industry: payload.industry,
+  country: payload.country,
+  vehicle_id: payload.vehicle_id,
+  brand: payload.brand,
+  model: payload.model,
+  status: payload.status
+}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="76b7787b-68f8-4a5f-85a8-ee1a56aa576c" message="Accounts inserted successfully in DB"/>
+		<ee:transform doc:name="Transform Message" doc:id="792e00ba-6056-4599-8b77-07f089b03c77">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  accountId: vars.originalAccount.id,
+  name: vars.originalAccount.name,
+  country: vars.originalAccount.country,
+  createdAt: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
 
 	
 </mule>

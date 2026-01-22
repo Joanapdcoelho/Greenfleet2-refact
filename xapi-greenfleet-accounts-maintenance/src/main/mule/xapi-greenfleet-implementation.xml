@@ -6,48 +6,14 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
-	<flow name="getAccount" doc:id="23e19abe-e980-42af-a47d-6b9c9685ced6" >
+	<http:request-config name="Papi-HTTP_Request_config" doc:name="HTTP Request config" doc:id="1e783020-2854-4434-8abf-4731023a33e8" basePath="/api">
+		<http:request-connection host="localhost" port="8082" />
+	</http:request-config>
+	<sub-flow name="getAccount" doc:id="28b2a1a2-7d02-4693-bc6a-e0e9b7f71d9a" >
 		<http:request method="GET" doc:name="Request" doc:id="c594891e-a827-44af-ad3a-a187ed8016f4" config-ref="HTTP_Request_configuration(Process)" path="/api/account" />
-	</flow>
-	<flow name="validate-id" doc:id="5801c531-6e20-41e2-9ebc-4fea06baec0f" >
-		<validation:is-true doc:name="Is true" doc:id="2e668d64-bf41-4b74-9303-1e736d8c1a1b" expression="#[ attributes.uriParams.ID matches /^[A]\d{3}$/]" message='"ID inválido"' />
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d7fdd516-d5cd-4674-b342-4581c28046b0" type="VALIDATION:INVALID_BOOLEAN">
-				<logger level="INFO" doc:name="Logger" doc:id="92a227ee-9c11-4b03-8c25-df1efc0e5029" message="#[error.description]" />
-				<ee:transform doc:name="Transform Message" doc:id="92e46eb8-0e28-4201-9c87-228f36e17387">
-					<ee:message>
-						<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-	"message": "ID inválido"
-}]]></ee:set-payload>
-					</ee:message>
-				</ee:transform>
-			</on-error-propagate>
-		</error-handler>
-	</flow>
-	<flow name="validate-status" doc:id="b2c87195-15ef-45a1-979f-169d9c4f4870" >
-		<validation:is-true doc:name="Is true" doc:id="8429292d-4320-46fb-85bc-7ff7a2f04745" expression='#[if (isEmpty(attributes.queryParams.status)) true else ["available", "in maintenance", "reserved"] contains attributes.queryParams.status]' message='"Status errado"' />
-		<error-handler >
-			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6aac932b-7ba6-4201-b9f9-54fda1e98860" type="VALIDATION:INVALID_BOOLEAN">
-				<logger level="INFO" doc:name="Logger" doc:id="3977c93c-f746-4c6c-8d50-474357648bd6" message="#[error.description]" />
-				<ee:transform doc:name="Transform Message" doc:id="47ec3d0c-a02c-42fc-b4ab-57afe1a30375">
-					<ee:message>
-						<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-	"message": "Satus inválido"
-}]]></ee:set-payload>
-					</ee:message>
-				</ee:transform>
-			</on-error-propagate>
-		</error-handler>
-	</flow>
-	<flow name="getAccount\(ID)" doc:id="80c2cbcf-697c-42cf-8ae7-ef43cf51996b">
+	</sub-flow>
+	<sub-flow name="getAccount\(ID)" doc:id="cc367806-15a3-4d58-bed3-b3cbb2108ca0" >
 		<logger level="INFO" doc:name="Logger" doc:id="7d1486fd-c6fa-4462-9861-1e138a5db806" />
-		<flow-ref doc:name="validate-id" doc:id="c0124779-8659-4dac-93b4-2840bde2fcbd" name="validate-id" target="greenfleet-implementationFlow" />
 		<http:request method="GET" doc:name="Request" doc:id="186eb0af-5ada-45dc-aa63-64e5a91e48b7" config-ref="HTTP_Request_configuration(Process)" path="/api/account/{ID}" responseTimeout="#[30000000]">
 			<http:uri-params><![CDATA[#[output application/java
 ---
@@ -55,18 +21,16 @@ output application/json
 	ID : attributes.uriParams.ID
 }]]]></http:uri-params>
 		</http:request>
-	</flow>
-	<flow name="getAccount\(ID)\vehicles" doc:id="7fe8bfa0-5965-4932-bc48-b9b4d8e810ed" >
+	</sub-flow>
+	<sub-flow name="getAccount\(ID)\vehicles" doc:id="324a647f-035e-436b-9536-fc0b2873b3e3" >
 		<logger level="INFO" doc:name="Logger" doc:id="589df721-ce3e-4aea-95e1-2679367fde2e" />
-		<flow-ref doc:name="validate-id" doc:id="e5c490a9-6d6d-4ae3-9aa3-23fcdf3c115a" name="validate-id" target="greenfleet-implementationFlow"/>
-		<flow-ref doc:name="validate-status" doc:id="88bf2d6d-76da-411d-b38d-2bc70e07c946" name="validate-status"/>
-		<http:request method="GET" doc:name="Request" doc:id="fb3fd4d0-8aef-468c-8b70-a27f5f9855e7" config-ref="HTTP_Request_configuration(Process)" path="/api/account/{ID}/vehicles" responseTimeout="#[30000000000000000]" >
-			<http:uri-params ><![CDATA[#[output application/java
+		<http:request method="GET" doc:name="Request" doc:id="fb3fd4d0-8aef-468c-8b70-a27f5f9855e7" config-ref="HTTP_Request_configuration(Process)" path="/api/account/{ID}/vehicles" responseTimeout="#[30000000000000000]">
+			<http:uri-params><![CDATA[#[output application/java
 ---
 {
 	ID : attributes.uriParams.ID
 }]]]></http:uri-params>
-			<http:query-params ><![CDATA[#[output application/java
+			<http:query-params><![CDATA[#[output application/java
 ---
 {
 	model : attributes.queryParams.model,
@@ -74,11 +38,11 @@ output application/json
 	status : attributes.queryParams.status
 }]]]></http:query-params>
 		</http:request>
-	</flow>
-	<flow name="postAccount" doc:id="51c34e42-2af3-4f84-9eda-f56a362b7a87" >
+	</sub-flow>
+	<sub-flow name="postAccount" doc:id="361727bb-0a09-4a32-b781-0ca29b1a74d6" >
 		<logger level="INFO" doc:name="Logger" doc:id="ae071048-c686-45ec-8d78-e80e0dcdf77e" message="#[payload]" />
-		<http:request method="POST" doc:name="Request" doc:id="f0bbbc5a-a0cd-4262-a21b-579199eb1f6b" config-ref="HTTP_Request_configuration(Process)" path="/api/account" outputMimeType="application/json" responseTimeout="#[3000000000000]" >
-			<http:headers ><![CDATA[#[%dw 2.0
+		<http:request method="POST" doc:name="Request" doc:id="f0bbbc5a-a0cd-4262-a21b-579199eb1f6b" config-ref="HTTP_Request_configuration(Process)" path="/api/account" outputMimeType="application/json" responseTimeout="#[3000000000000]">
+			<http:headers><![CDATA[#[%dw 2.0
 output application/java
 ---
 {
@@ -86,9 +50,9 @@ output application/java
     "Accept": "application/json"
 }]]]></http:headers>
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="49b009ec-8d75-4e62-b4ad-af02b626d506" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="49b009ec-8d75-4e62-b4ad-af02b626d506">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -96,11 +60,11 @@ output application/json
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-	</flow>
-	<flow name="postMaintenance" doc:id="f1c99b5e-81bc-4c20-a7be-391f7779ec18" >
+	</sub-flow>
+	<sub-flow name="postMaintenance" doc:id="2ffb20da-76a8-4805-8618-6d654439c012" >
 		<logger level="INFO" doc:name="Logger" doc:id="07836276-f07e-48f3-b0da-e8b537a0dcf7" message="#[payload]" />
-		<http:request method="POST" doc:name="Request" doc:id="4365de02-be5e-4c97-aebf-092b4d49af08" config-ref="HTTP_Request_configuration(Process)" path="/api/maintenance" outputMimeType="application/json" responseTimeout="#[3000000000]" >
-			<http:headers ><![CDATA[#[%dw 2.0
+		<http:request method="POST" doc:name="Request" doc:id="4365de02-be5e-4c97-aebf-092b4d49af08" config-ref="HTTP_Request_configuration(Process)" path="/api/maintenance" outputMimeType="application/json" responseTimeout="#[3000000000]">
+			<http:headers><![CDATA[#[%dw 2.0
 output application/java
 ---
 {
@@ -108,9 +72,9 @@ output application/java
     "Accept": "application/json"
 }]]]></http:headers>
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="f9bf60ad-b753-41d5-b45a-85a6ffa65d62" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="f9bf60ad-b753-41d5-b45a-85a6ffa65d62">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -118,5 +82,8 @@ output application/json
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-	</flow>
+	</sub-flow>
+	<sub-flow name="Post-accounts2" doc:id="9c97f069-b3c9-4623-a55f-edb7e963f27f" >
+		<http:request doc:name="RequestPapi" doc:id="db42f902-8aa2-4a44-b01d-f6c4722feb6a" config-ref="Papi-HTTP_Request_config" method="POST" path="/accounts2" />
+	</sub-flow>
 </mule>

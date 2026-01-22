@@ -145,4 +145,11 @@ output application/json
 		</scheduler>
 		<flow-ref doc:name="weeklyMaintenanceCsv" doc:id="16833a85-23e5-4c63-99a0-7db706cb5195" name="weeklyMaintenanceCsvImplement"/>
 	</flow>
+	<flow name="sapi-greenfleet-post-accounts2-main" doc:id="6e82da18-6cfd-407d-b0eb-e1b7645e6cd7" >
+		<http:listener doc:name="Listener" doc:id="542077fc-a556-4238-b9c3-1977ddf082bc" config-ref="sapiGreenfleetHttpListener" path="/api/accounts2">
+			<http:response statusCode="#[vars.httpStatus default 200]" />
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="4b8f893a-c067-49e5-b347-80c49722b271" message="chamado"/>
+		<flow-ref doc:name="postAccounts2-implement" doc:id="44064042-c6c2-4394-8926-23537668a3d1" name="postAccounts2-implementation"/>
+	</flow>
 </mule>

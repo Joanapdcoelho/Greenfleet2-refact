@@ -14,7 +14,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<http:request-config name="HTTPpapi" doc:name="HTTP Request config" doc:id="56a41e20-e380-4260-978c-9d07f8160760" >
 		<http:request-connection host="0.0.0.0" port="8082" />
 	</http:request-config>
-	<flow name="getPartnerAccount" doc:id="3872f85a-5990-4d9d-bba1-1bf4b7cdbe3c" >
+	<sub-flow name="getPartnerAccount" doc:id="27fea7a4-3f6d-4a8f-839d-d591ad71cb05" >
 		<logger level="INFO" doc:name="Logger" doc:id="609e75d7-d3aa-442e-a013-e4011a41a6fe" />
 		<ee:transform doc:name="Transform Message" doc:id="c332e128-a50e-478f-8d84-564123c46a95">
 			<ee:message>
@@ -27,8 +27,7 @@ readUrl("classpath://partnerFleetData.json", "application/json")
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-	
-</flow>
+	</sub-flow>
 	
 	
 	
