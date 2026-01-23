@@ -1,0 +1,1 @@
+"Welcome new account\nAccountId: A90\nName: Teste demo1\nCountry: Portugal\nCreated at: 2026-01-23T20:10:43.4778512Z"
