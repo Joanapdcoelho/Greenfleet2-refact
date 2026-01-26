@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
 	<http:request-config name="Papi-HTTP_Request_config" doc:name="HTTP Request config" doc:id="1e783020-2854-4434-8abf-4731023a33e8" basePath="/api">
-		<http:request-connection host="localhost" port="8082" />
+		<http:request-connection host="localhost" port="8082" connectionIdleTimeout="600000">
+			<http:client-socket-properties >
+				<sockets:tcp-client-socket-properties connectionTimeout="600000" />
+			</http:client-socket-properties>
+		</http:request-connection>
 	</http:request-config>
 	<sub-flow name="getAccount" doc:id="28b2a1a2-7d02-4693-bc6a-e0e9b7f71d9a" >
 		<http:request method="GET" doc:name="Request" doc:id="c594891e-a827-44af-ad3a-a187ed8016f4" config-ref="HTTP_Request_configuration(Process)" path="/api/account" />
@@ -85,5 +90,6 @@ output application/json
 	</sub-flow>
 	<sub-flow name="Post-accounts2" doc:id="9c97f069-b3c9-4623-a55f-edb7e963f27f" >
 		<http:request doc:name="RequestPapi" doc:id="db42f902-8aa2-4a44-b01d-f6c4722feb6a" config-ref="Papi-HTTP_Request_config" method="POST" path="/accounts2" />
+		<logger level="INFO" doc:name="Logger" doc:id="901713f5-c174-4678-afd2-6905df53ce60" message="Pedido enviado para a Papi"/>
 	</sub-flow>
 </mule>

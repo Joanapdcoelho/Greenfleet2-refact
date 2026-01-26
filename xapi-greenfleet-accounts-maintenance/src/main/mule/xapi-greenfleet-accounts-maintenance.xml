@@ -64,19 +64,19 @@ output application/json
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-            <!-- [STUDIO:"On Error Propagate"]<on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
-&#45;&#45;-
-{message: "Unsupported media type"}&#93;&#93;></ee:set-payload>
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">415</ee:set-variable>
                     </ee:variables>
                 </ee:transform>
-            </on-error-propagate> [STUDIO] -->
+            </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
