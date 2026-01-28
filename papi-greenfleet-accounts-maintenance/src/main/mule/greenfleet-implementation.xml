@@ -125,6 +125,5 @@ payload.fleetData map (a) ->{
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="30f198b1-a619-4b14-be09-f2f0b9a87072" />
-		<!-- [STUDIO:"Scatter-Gather"]<scatter-gather doc:name="Scatter-Gather" doc:id="5aa0a1c4-71fc-4a5e-9fdd-1c4fcf55c510" /> [STUDIO] -->
 	</flow>
 </mule>
