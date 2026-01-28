@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <flow name="greenfleetprocess-main">
-        <http:listener config-ref="greenfleetprocess-httpListenerConfig" path="/api/*">
+    <apikit:config name="papi-greenfleet-accounts-maintenance-config" api="resource::e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5:papi-greenfleet-accounts-maintenance:1.0.2:raml:zip:papi-greenfleet-accounts-maintenance.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:listener-config name="papi-HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c78f0886-4b43-44b8-997d-77dbedf6ddab">
+        <http:listener-connection host="0.0.0.0" port="8082" />
+    </http:listener-config>
+    <flow name="papi-greenfleet-accounts-maintenance-main">
+        <http:listener config-ref="papi-HTTP_Listener_config" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
@@ -10,7 +14,7 @@
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="greenfleetprocess-config" />
+        <apikit:router config-ref="papi-greenfleet-accounts-maintenance-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform doc:name="Transform Message">
@@ -92,17 +96,17 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="greenfleetprocess-console">
-        <http:listener config-ref="greenfleetprocess-httpListenerConfig" path="/console/*">
+    <flow name="papi-greenfleet-accounts-maintenance-console">
+        <http:listener config-ref="papi-HTTP_Listener_config" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:console config-ref="greenfleetprocess-config" />
+        <apikit:console config-ref="papi-greenfleet-accounts-maintenance-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:NOT_FOUND">
                 <ee:transform doc:name="Transform Message">
@@ -119,23 +123,184 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="get:\account:greenfleetprocess-config" doc:id="d0261ed3-6df2-4ad9-994d-6199379c5a90">
-        <flow-ref doc:name="getAccount" doc:id="c58c8172-9d0c-4ad9-8b3b-f09b29e946a1" name="getAccount" />
+    <flow name="get:\account:papi-greenfleet-accounts-maintenance-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "A001",
+    name: "GreenFleet Solutions",
+    industry: "Fleet Management",
+    country: "Portugal",
+    vehicles: [
+      {
+        id: "V101",
+        brand: "Tesla",
+        model: "Model 3",
+        status: "available"
+      }, 
+      {
+        id: "V102",
+        brand: "Nissan",
+        model: "Leaf",
+        status: "in maintenance"
+      }
+    ]
+  }, 
+  {
+    id: "A002",
+    name: "EcoMove Logistics",
+    industry: "Transportation",
+    country: "Spain",
+    vehicles: [
+      {
+        id: "V103",
+        brand: "Renault",
+        model: "Zoe",
+        status: "reserved"
+      }, 
+      {
+        id: "V104",
+        brand: "BMW",
+        model: "i3",
+        status: "available"
+      }
+    ]
+  }, 
+  {
+    id: "A003",
+    name: "UrbanDrive Services",
+    industry: "Car Sharing",
+    country: "France",
+    vehicles: [
+      {
+        id: "V105",
+        brand: "Hyundai",
+        model: "Kona Electric",
+        status: "available"
+      }, 
+      {
+        id: "V106",
+        brand: "Peugeot",
+        model: "e-208",
+        status: "in maintenance"
+      }
+    ]
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <flow-ref doc:name="get Account" doc:id="1cad08ad-8d8e-4d19-bf51-4fa5d33ac6a6" name="getAccount" />
     </flow>
-    <flow name="post:\account:application\json:greenfleetprocess-config">
-        <flow-ref doc:name="postAccount" doc:id="c5924651-9164-4c0c-96c3-b9739d469c50" name="postAccount" />
+    <flow name="get:\account\(accountId)\vehicles:papi-greenfleet-accounts-maintenance-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="accountId">attributes.uriParams.'accountId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: "V101",
+    brand: "Tesla",
+    model: "Model 3",
+    status: "available"
+  }, 
+  {
+    id: "V102",
+    brand: "Nissan",
+    model: "Leaf",
+    status: "in maintenance"
+  }
+] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <flow-ref doc:name="getAccount\(ID)\vehicles" doc:id="32f242f4-2acb-4e93-a27e-8c0d0db4b33c" name="getAccount\(ID)\vehicles" />
     </flow>
-    <flow name="post:\maintenance:application\json:greenfleetprocess-config">
-        <flow-ref doc:name="postMaintenance" doc:id="22d8a9ba-5b5b-4766-bd1c-de34f79871ea" name="postMaintenance" />
+    <flow name="get:\account\(accountId):papi-greenfleet-accounts-maintenance-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:variables>
+                <ee:set-variable variableName="accountId">attributes.uriParams.'accountId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  id: "A001",
+  name: "GreenFleet Solutions",
+  industry: "Fleet Management",
+  country: "Portugal",
+  vehicles: [
+    {
+      id: "V101",
+      brand: "Tesla",
+      model: "Model 3",
+      status: "available"
+    }, 
+    {
+      id: "V102",
+      brand: "Nissan",
+      model: "Leaf",
+      status: "in maintenance"
+    }
+  ]
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <flow-ref doc:name="Get account by id" doc:id="85bee602-de90-4981-b55b-83867e85e66a" name="getAccount\(ID)" />
     </flow>
-    <flow name="get:\account\(ID)\vehicles:greenfleetprocess-config">
-        <flow-ref doc:name="getAccount\(ID)\vehicles" doc:id="9f142f5d-4cba-43b9-8260-b17dbd5e757e" name="getAccount\(ID)\vehicles" />
+    <flow name="post:\account:application\json:papi-greenfleet-accounts-maintenance-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Accounts accepted for processing."
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <flow-ref doc:name="post account" doc:id="377e9ee2-076a-44fd-a7b8-701d62fc3af6" name="postAccount" />
     </flow>
-    <flow name="get:\account\(ID):greenfleetprocess-config">
-        <flow-ref doc:name="getAccount\(ID)" doc:id="f89cabaa-2c86-4f79-ac60-dc6fa4620b16" name="getAccount\(ID)" />
+    <flow name="post:\maintenance:application\json:papi-greenfleet-accounts-maintenance-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Maintenance request accepted for processing."
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <flow-ref doc:name="post maintenance" doc:id="a17613ad-bd6b-4b22-84a4-7f1f3f19c8e6" name="postMaintenance" />
     </flow>
-    <flow name="get:\partner-accounts:greenfleetprocess-config">
-        <logger level="INFO" message="get:\partner-accounts:greenfleetprocess-config" />
-		<flow-ref doc:name="Flow Reference" doc:id="c0aeda64-9292-43df-92d4-bbde37f02af7" name="getPartnerAccount"/>
+    <flow name="post:\partner-accounts:application\json:papi-greenfleet-accounts-maintenance-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Partner accounts accepted for processing."
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <flow-ref doc:name="Post partner accounts" doc:id="416662db-158f-4a6e-be70-165b7effddb0" name="PostPartnerAccounts" />
+    </flow>
+    <flow name="papi-greenfleet-post-accounts2-main" doc:id="a95d7345-d29e-4357-a207-10627d57c42c">
+        <http:listener doc:name="Papi-main" doc:id="f4aecae3-8d8c-4914-861d-cf219037f697" config-ref="papi-HTTP_Listener_config" path="/api/accounts2" />
+        <logger level="INFO" doc:name="Logger" doc:id="e8de8d91-407e-4a6d-8c31-084514e5d38d" message="chamado" />
+        <flow-ref doc:name="PostAccounts2" doc:id="21b98d0f-e04b-4574-bf09-5b42785bd95c" name="postAccounts2-implement" />
     </flow>
 </mule>

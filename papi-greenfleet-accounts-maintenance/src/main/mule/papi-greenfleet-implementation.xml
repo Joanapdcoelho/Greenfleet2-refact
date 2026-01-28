@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:request-config name="papi-HTTP_Request_config" doc:name="HTTP Request config" doc:id="1b57d6a6-8078-4a6a-920b-858517836564" basePath="/api">
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="88529c0a-da91-4584-a794-fc81610da773">
+		<vm:queues >
+			<vm:queue queueName="welcome-new-account" />
+		</vm:queues>
+	</vm:config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="debdc083-a0a0-45db-a5eb-1d52c96814c1" >
+		<file:connection workingDir="C:\Github\Greenfleet2-refact\reports" />
+	</file:config>
+	<http:request-config name="Sapi-HTTP_Request_config" doc:name="HTTP Request configuration" doc:id="f9e18d7e-550f-4b38-99ad-63f9a69d9336" doc:description="http request para a sapi porta 8083" basePath="/api">
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<http:request-config name="Sapi-HTTP" doc:name="HTTP Request configuration" doc:id="375f462a-827b-4940-a45e-1a7fddb40b34" basePath="/api">
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<http:request-config name="partner-HTTP_Request_config" doc:name="HTTP Request configuration" doc:id="a823e98d-388b-4556-8bfa-12c0bc163056" basePath="/api" >
+		<http:request-connection host="localhost" port="8085" />
+	</http:request-config>
+	<sub-flow name="getAccount" doc:id="e84a2f8a-989f-4451-8fd9-366e6e470346" >
+		<http:request doc:name="Request" doc:id="ad2e5b03-0039-48a5-9014-012bb9ec24cc" config-ref="Sapi-HTTP_Request_config" path="/account" method="GET"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e3f5543d-4a0b-4a8e-b5e5-e3ec926cf9e7" message="#[payload]" />
+	</sub-flow>
+	<sub-flow name="postAccount" doc:id="53047a57-ac54-4fda-b0c2-9b0f8a7d43bb" >
+		<logger level="INFO" doc:name="Logger" doc:id="5e471e67-45a8-436b-81bd-2864b48bc34c" message="#[payload]" />
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="9bb6a52d-f53f-4182-8c6b-15150640e4fd" variableName="accountUser" mimeType="application/json" />
+		<flow-ref doc:name="Flow Reference get account" doc:id="d7cff232-df1a-4fb5-ad9f-dfec61e4d26a" name="getAccount" />
+		<logger level="INFO" doc:name="Logger1" doc:id="fe103f34-9892-40ed-979d-7906c305714b" message="#[vars.accountUser]" />
+		<ee:transform doc:name="Transform Message" doc:id="8dd39bf8-a28c-41a8-8542-c55674028f3c">
+			<ee:message>
+				<ee:set-payload><![CDATA[
+%dw 2.0
+output application/json
+---
+payload
+    groupBy ((item) -> item.id)
+    pluck ((value, key) -> {
+        id: key,
+        name: value[0].name,
+        industry: value[0].industry,
+        country: value[0].country,
+        vehicles: value map {
+            id: $.vehicle_id,
+            brand: $.brand,
+            model: $.model,
+            status: $.status
+        }
+    })
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message1" doc:id="267dc39d-f82d-48f0-a69f-1eaa9665625d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var accounts = payload
+---
+(accounts ++ (vars.accountuser default [])) orderBy ((item) -> item.name)
+
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="df051b52-9040-41ff-9e84-cfdc647fbe6e" config-ref="Sapi-HTTP_Request_config" path="/account" outputMimeType="application/json" responseTimeout="#[300000000000]">
+			<http:headers><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+    "Content-Type": "application/json; charset=UTF-8",
+    "Accept": "application/json"
+}]]]></http:headers>
+		</http:request>
+	</sub-flow>
+	<sub-flow name="postMaintenance" doc:id="f55567d6-0ede-47d9-a327-0f1644e20d9a" >
+		<logger level="INFO" doc:name="Logger" doc:id="662f163b-84bc-4fa2-80d5-314166dd6058" message="#[payload]" />
+		<http:request method="POST" doc:name="Request" doc:id="d941a18b-4b6d-4442-ad89-b119c5c9139b" config-ref="Sapi-HTTP_Request_config" path="/maintenance" outputMimeType="application/json" responseTimeout="#[3000000000]">
+			<http:headers><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+    "Content-Type": "application/json; charset=UTF-8",
+    "Accept": "application/json"
+}]]]></http:headers>
+		</http:request>
+	</sub-flow>
+	<sub-flow name="getAccount\(ID)\vehicles" doc:id="567cdc69-8374-4b78-ae0b-d11f22c5df6e" >
+		<logger level="INFO" doc:name="Logger" doc:id="a18a7c2a-d9ab-4f49-9608-9d7296e94b14" />
+		<http:request doc:name="Request" doc:id="00629382-2d23-4eed-bbe4-c5e497d7789e" config-ref="Sapi-HTTP_Request_config" path="/account/{ID}/vehicles" responseTimeout="#[30000000000]" method="GET">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	ID : attributes.uriParams.ID
+}]]]></http:uri-params>
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	model : attributes.queryParams.model,
+	brand : attributes.queryParams.brand,
+	status : attributes.queryParams.status
+}]]]></http:query-params>
+		</http:request>
+	</sub-flow>
+	<sub-flow name="getAccount\(ID)" doc:id="b414995d-fda3-4023-9fc4-62cd4d9c9ff1" >
+		<logger level="INFO" doc:name="Logger" doc:id="a51f7056-8c2c-4380-a664-def8bec3660f" />
+		<http:request doc:name="Request" doc:id="38557d87-2595-435e-906b-7bbc100aff4e" config-ref="Sapi-HTTP_Request_config" path="/account/{ID}" method="GET">
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	ID : attributes.uriParams.ID
+}]]]></http:uri-params>
+		</http:request>
+	</sub-flow>
+	<sub-flow name="PostPartnerAccounts" doc:id="4cbe7bd6-2b98-40c5-94fd-54359ca51da2" >
+		<http:request doc:name="partnerHttp" doc:id="0ddbfa76-ec75-433c-b0fc-d0bb1b75a1f6" path="/partner-fleet-data" config-ref="partner-HTTP_Request_config" method="GET"/>
+		<ee:transform doc:name="Transform Message" doc:id="852a5ed3-8fb5-4008-93b2-f75e4a63cbdf">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+var root =
+  if (payload is Array and sizeOf(payload) > 0)
+    payload[0]
+  else
+    payload
+
+var fleet = root.fleetData default []
+
+---
+{
+  accountsRows: fleet flatMap (c) ->
+    ((c.cars default []) map (car) -> {
+      id: c.client_code,
+      name: c.companyTitle,
+      industry: null,
+      country: c.region,
+      vehicle_id: car.plate,
+      brand: car.brandName,
+      model: car.modelType,
+      status: car.currentState
+    }),
+
+  maintenanceRows: fleet flatMap (c) ->
+    (((c.cars default [])
+      filter (car) -> (car.currentState default "") == "maintenance")
+      map (car) -> {
+        id: car.plate as String,
+        vehicleId: car.plate,
+        description: "Service information from partner",
+        date: car.lastService,
+        status: car.currentState
+      })
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request doc:name="Request" doc:id="ec5ff381-a03d-4b01-bdeb-28cb90754bfd" config-ref="papi-HTTP_Request_config" method="POST" path="/partner-accounts" />
+	</sub-flow>
+	<sub-flow name="postAccounts2-implement" doc:id="11a5186e-a820-4556-904b-d432d921e9e0" >
+		<ee:transform doc:name="Transform Message" doc:id="37cb4003-5332-4b23-bf17-07aeb6c70ea7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+  	name: payload.name,
+  	industry: payload.industry,
+  	country: payload.country,
+  	vehicle_id: payload.vehicle_id,
+  	brand: payload.brand,
+  	model: payload.model,
+  	status: payload.status
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request doc:name="Request" doc:id="777b5290-83f9-4669-981a-219377394636" method="POST" config-ref="Sapi-HTTP" path="/accounts2" target="sapiResp"/>
+		<choice doc:name="Choice" doc:id="a92970f1-94b8-43d0-9c94-b069c62856e7" >
+			<when expression="#[vars.sapiResp.accountId != null]">
+				<ee:transform doc:name="Transform Message" doc:id="612b6c1e-5f8d-485d-bff2-7e6831a48d37">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  accountId: vars.sapiResp.accountId,
+  name: payload.name,
+  country: payload.country,
+  createdAt: (now() as String
+  	{format: "yyyy-MM-dd HH:mm:ss"})
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<vm:publish queueName="welcome-new-account" doc:name="Publish" doc:id="a9c37ee3-be38-40c7-981e-8ccf7e416ac1" config-ref="VM_Config"/>
+				<logger level="INFO" doc:name="Logger" doc:id="a726d76e-915c-4f4b-930d-7b56381eba75" message='#["Mensagem publicada na queue com sucesso. AccountId: " ++ vars.sapiResp.accountId]'/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="5c787ce8-157b-43e9-ac98-9032d496eeb7" message='#["Não foi possível publicar na queue, resposta da SAPI: " ++ write(vars.sapiResp, "application/json")]'/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<flow name="welcome-subscriber-flow" doc:id="a1e142f9-0411-4f3e-aba3-5a6ad1ca22fe" >
+		<vm:listener doc:name="Listener" doc:id="2687cf99-fe02-406c-bc14-c3a9b9b54abc" config-ref="VM_Config" queueName="welcome-new-account"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5a8273f0-e8f7-4585-b59e-ea9405f970cc" message='#["Recebida mensagem da queue. Payload: " ++  write(payload, "application/json")]'/>
+		<ee:transform doc:name="Transform Message" doc:id="0f1d75ca-f411-4221-9318-6bf151402738" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="03415193-0603-4038-a744-6b77ba15df91" config-ref="File_Config" path='#["welcome/welcome_" ++ (payload.accountId as String) ++ "_" ++ (now() as String {format: "yyyy-MM-dd"}) ++ ".txt"]'>
+			<file:content ><![CDATA[#["Welcome, new account " ++ payload.name
+++ " AccountId: " ++ 
+payload.accountId
+++ " Country: " ++ payload.country
+++ " Created at: " ++ payload.createdAt]]]></file:content>
+		</file:write>
+	</flow>
+</mule>

@@ -22,7 +22,7 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
 		<db:select doc:name="Select" doc:id="eb431969-9519-4903-ad16-785044d361f8" config-ref="Database_Config">
 			<db:sql><![CDATA[SELECT * FROM Accounts]]></db:sql>
 		</db:select>
-		<validation:is-true doc:name="Is not empty" doc:id="41511c22-e488-4a53-b4ae-0e114f5d1aa4" expression="#[!isEmpty(payload)]" message='"Não existem contas"'>
+		<validation:is-true doc:name="Is not empty" doc:id="41511c22-e488-4a53-b4ae-0e114f5d1aa4" expression="#[!isEmpty(payload)]" message='"No accounts found"'>
 			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
 		</validation:is-true>
 		<ee:transform doc:name="Transform Message" doc:id="83298bbc-fe56-4c5d-af3b-fdc9108fe052">
@@ -42,7 +42,7 @@ FROM accounts
 WHERE id = :id;]]></db:sql>
 			<db:input-parameters><![CDATA[#[{ id: attributes.uriParams.ID }]]]></db:input-parameters>
 		</db:select>
-		<validation:is-true doc:name="Is not empty" doc:id="14975bb8-5835-4456-87a7-f8ebdb3b266f" expression="#[!isEmpty(payload)]" message='"Não existem contas"'>
+		<validation:is-true doc:name="Is not empty" doc:id="14975bb8-5835-4456-87a7-f8ebdb3b266f" expression="#[!isEmpty(payload)]" message='"No accounts found"'>
 			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
 		</validation:is-true>
 		<ee:transform doc:name="Transform Message" doc:id="6f5c0464-de83-4139-8e9e-508ffaa0834d">
@@ -69,7 +69,7 @@ AND (:status IS NULL OR status = :status);]]></db:sql>
   status: attributes.queryParams.status
 }]]]></db:input-parameters>
 		</db:select>
-		<validation:is-true doc:name="Is not empty" doc:id="faeeb0ef-8682-477b-85e5-f98f5ae6b03e" expression="#[!isEmpty(payload)]" message='"Não existem veiculos"'>
+		<validation:is-true doc:name="Is not empty" doc:id="faeeb0ef-8682-477b-85e5-f98f5ae6b03e" expression="#[!isEmpty(payload)]" message='"No vehicles"'>
 			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
 		</validation:is-true>
 		<ee:transform doc:name="Transform Message" doc:id="fe72ab31-7a87-4a0f-9614-e95e5fdb9425">

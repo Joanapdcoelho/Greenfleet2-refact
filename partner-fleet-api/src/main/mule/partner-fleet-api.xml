@@ -3,15 +3,15 @@
     <http:listener-config name="partner-fleet-api-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8085" />
     </http:listener-config>
-    <apikit:config name="partner-fleet-api-config" api="resource::8447f95a-7ec8-4e54-affa-1ffc93d1beaf:partner-fleet-api:1.0.2:raml:zip:partner-fleet-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="partner-fleet-api-config" api="resource::e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5:partner-fleet-api:1.0.1:raml:zip:partner-fleet-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="partner-fleet-api-main">
-        <http:listener path="/api/*" config-ref="partner-fleet-api-httpListenerConfig">
+        <http:listener config-ref="partner-fleet-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body><![CDATA[#[payload]]]></http:body>
-                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="partner-fleet-api-config" />
@@ -170,8 +170,5 @@ output application/json
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-    </flow>
-    <flow name="post:\partner-fleet-data:application\json:partner-fleet-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="48400e84-0b93-48a4-ab58-5459c4222cfc" />
     </flow>
 </mule>
