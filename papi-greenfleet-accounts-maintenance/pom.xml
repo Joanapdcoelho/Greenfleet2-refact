@@ -106,9 +106,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>8447f95a-7ec8-4e54-affa-1ffc93d1beaf</groupId>
-			<artifactId>greenfleetprocess</artifactId>
-			<version>1.0.8</version>
+			<groupId>e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5</groupId>
+			<artifactId>papi-greenfleet-accounts-maintenance</artifactId>
+			<version>1.0.3</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>

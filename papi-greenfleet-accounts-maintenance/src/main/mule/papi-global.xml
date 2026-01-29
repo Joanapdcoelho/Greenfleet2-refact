@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <http:request-config name="Sapi-HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="063f1926-6abd-4791-ac25-a4273667636f">
+        <http:request-connection host="localhost" port="8083" />
+    </http:request-config>
+	<apikit:config outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" doc:name="Router" doc:id="2ec1c25d-75ac-460c-ad78-3debdabbc235" name="papi-greenfleet-accounts-maintenance-config" api="resource::e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5:papi-greenfleet-accounts-maintenance:1.0.3:raml:zip:papi-greenfleet-accounts-maintenance.raml" />
+	<http:listener-config name="papi-greenfleet-httpListenerConfig" doc:name="HTTP Listener config" doc:id="9468c866-86f6-47fa-8770-2116752a8f85" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configurationPartnerFleet" doc:name="HTTP Request configuration" doc:id="48c5579b-a84e-4dd7-9f4b-6930404f9376" >
+		<http:request-connection host="localhost" port="8085" />
+	</http:request-config>
+</mule>

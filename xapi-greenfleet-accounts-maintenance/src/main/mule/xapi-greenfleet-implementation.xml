@@ -7,19 +7,12 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
-	<http:request-config name="Papi-HTTP_Request_config" doc:name="HTTP Request config" doc:id="1e783020-2854-4434-8abf-4731023a33e8" basePath="/api">
-		<http:request-connection host="localhost" port="8082" connectionIdleTimeout="600000">
-			<http:client-socket-properties >
-				<sockets:tcp-client-socket-properties connectionTimeout="600000" />
-			</http:client-socket-properties>
-		</http:request-connection>
-	</http:request-config>
 	<sub-flow name="getAccount" doc:id="28b2a1a2-7d02-4693-bc6a-e0e9b7f71d9a" >
-		<http:request method="GET" doc:name="Request" doc:id="c594891e-a827-44af-ad3a-a187ed8016f4" config-ref="HTTP_Request_configuration(Process)" path="/api/account" />
+		<http:request doc:name="Request" doc:id="c594891e-a827-44af-ad3a-a187ed8016f4" path="/account" config-ref="Papi-HTTP_Request_config"/>
 	</sub-flow>
-	<sub-flow name="getAccount\(ID)" doc:id="cc367806-15a3-4d58-bed3-b3cbb2108ca0" >
+	<sub-flow name="getAccount\(accountId)" doc:id="cc367806-15a3-4d58-bed3-b3cbb2108ca0" >
 		<logger level="INFO" doc:name="Logger" doc:id="7d1486fd-c6fa-4462-9861-1e138a5db806" />
-		<http:request method="GET" doc:name="Request" doc:id="186eb0af-5ada-45dc-aa63-64e5a91e48b7" config-ref="HTTP_Request_configuration(Process)" path="/api/account/{ID}" responseTimeout="#[30000000]">
+		<http:request doc:name="Request" doc:id="186eb0af-5ada-45dc-aa63-64e5a91e48b7" path="/account/{ID}" responseTimeout="#[30000000]" config-ref="Papi-HTTP_Request_config">
 			<http:uri-params><![CDATA[#[output application/java
 ---
 {
@@ -27,9 +20,9 @@ http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/
 }]]]></http:uri-params>
 		</http:request>
 	</sub-flow>
-	<sub-flow name="getAccount\(ID)\vehicles" doc:id="324a647f-035e-436b-9536-fc0b2873b3e3" >
+	<sub-flow name="getAccount\(accountId)\vehicles" doc:id="324a647f-035e-436b-9536-fc0b2873b3e3" >
 		<logger level="INFO" doc:name="Logger" doc:id="589df721-ce3e-4aea-95e1-2679367fde2e" />
-		<http:request method="GET" doc:name="Request" doc:id="fb3fd4d0-8aef-468c-8b70-a27f5f9855e7" config-ref="HTTP_Request_configuration(Process)" path="/api/account/{ID}/vehicles" responseTimeout="#[30000000000000000]">
+		<http:request doc:name="Request" doc:id="fb3fd4d0-8aef-468c-8b70-a27f5f9855e7" path="/account/{ID}/vehicles" responseTimeout="#[30000000000000000]" config-ref="Papi-HTTP_Request_config">
 			<http:uri-params><![CDATA[#[output application/java
 ---
 {
@@ -46,7 +39,7 @@ http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/
 	</sub-flow>
 	<sub-flow name="postAccount" doc:id="361727bb-0a09-4a32-b781-0ca29b1a74d6" >
 		<logger level="INFO" doc:name="Logger" doc:id="ae071048-c686-45ec-8d78-e80e0dcdf77e" message="#[payload]" />
-		<http:request method="POST" doc:name="Request" doc:id="f0bbbc5a-a0cd-4262-a21b-579199eb1f6b" config-ref="HTTP_Request_configuration(Process)" path="/api/account" outputMimeType="application/json" responseTimeout="#[3000000000000]">
+		<http:request method="POST" doc:name="Request" doc:id="f0bbbc5a-a0cd-4262-a21b-579199eb1f6b" path="/account" outputMimeType="application/json" responseTimeout="#[3000000000000]" config-ref="Papi-HTTP_Request_config">
 			<http:headers><![CDATA[#[%dw 2.0
 output application/java
 ---
@@ -61,14 +54,14 @@ output application/java
 output application/json
 ---
 {
-  message: "Contas adicionas com Sucesso"
+  message: "Accounts created successfully."
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
 	<sub-flow name="postMaintenance" doc:id="2ffb20da-76a8-4805-8618-6d654439c012" >
 		<logger level="INFO" doc:name="Logger" doc:id="07836276-f07e-48f3-b0da-e8b537a0dcf7" message="#[payload]" />
-		<http:request method="POST" doc:name="Request" doc:id="4365de02-be5e-4c97-aebf-092b4d49af08" config-ref="HTTP_Request_configuration(Process)" path="/api/maintenance" outputMimeType="application/json" responseTimeout="#[3000000000]">
+		<http:request method="POST" doc:name="Request" doc:id="4365de02-be5e-4c97-aebf-092b4d49af08" path="/maintenance" outputMimeType="application/json" responseTimeout="#[3000000000]" config-ref="Papi-HTTP_Request_config">
 			<http:headers><![CDATA[#[%dw 2.0
 output application/java
 ---
@@ -83,13 +76,13 @@ output application/java
 output application/json
 ---
 {
-  message: "Pedido de manutenção adicionado"
+  message: "Maintenance request created successfully."
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
 	<sub-flow name="Post-accounts2" doc:id="9c97f069-b3c9-4623-a55f-edb7e963f27f" >
-		<http:request doc:name="RequestPapi" doc:id="db42f902-8aa2-4a44-b01d-f6c4722feb6a" config-ref="Papi-HTTP_Request_config" method="POST" path="/accounts2" />
+		<http:request doc:name="RequestPapi" doc:id="db42f902-8aa2-4a44-b01d-f6c4722feb6a" method="POST" path="/accounts2" config-ref="Papi-HTTP_Request_config"/>
 		<logger level="INFO" doc:name="Logger" doc:id="901713f5-c174-4678-afd2-6905df53ce60" message="Pedido enviado para a Papi"/>
 	</sub-flow>
 </mule>

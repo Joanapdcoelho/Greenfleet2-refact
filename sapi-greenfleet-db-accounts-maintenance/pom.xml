@@ -129,13 +129,6 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>8447f95a-7ec8-4e54-affa-1ffc93d1beaf</groupId>
-			<artifactId>greenfleetsystem</artifactId>
-			<version>1.0.10</version>
-			<classifier>raml</classifier>
-			<type>zip</type>
-		</dependency>
-		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-tracing-module</artifactId>
 			<version>1.2.0</version>
@@ -152,6 +145,13 @@
 			<artifactId>mule-salesforce-connector</artifactId>
 			<version>11.3.3</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5</groupId>
+			<artifactId>sapi-greenfleet-accounts-maintenance</artifactId>
+			<version>1.0.1</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
 		</dependency>
 	</dependencies>
 

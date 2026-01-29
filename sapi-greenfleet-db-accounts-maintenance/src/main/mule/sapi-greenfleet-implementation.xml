@@ -10,11 +10,6 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd
 http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
-	<vm:config name="VM_Config" doc:name="VM Config" doc:id="3edaec97-d616-4d7b-8a33-fd6d1850d82a">
-		<vm:queues >
-			<vm:queue queueName="welcome-new-account" />
-		</vm:queues>
-	</vm:config>
 
 
 <sub-flow name="getAccount" doc:id="7be970cc-3575-4207-8c72-c6a25198699d" >
@@ -22,7 +17,7 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
 		<db:select doc:name="Select" doc:id="eb431969-9519-4903-ad16-785044d361f8" config-ref="Database_Config">
 			<db:sql><![CDATA[SELECT * FROM Accounts]]></db:sql>
 		</db:select>
-		<validation:is-true doc:name="Is not empty" doc:id="41511c22-e488-4a53-b4ae-0e114f5d1aa4" expression="#[!isEmpty(payload)]" message='"Não existem contas"'>
+		<validation:is-true doc:name="Is not empty" doc:id="41511c22-e488-4a53-b4ae-0e114f5d1aa4" expression="#[!isEmpty(payload)]" message='"No accounts found"'>
 			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
 		</validation:is-true>
 		<ee:transform doc:name="Transform Message" doc:id="83298bbc-fe56-4c5d-af3b-fdc9108fe052">
@@ -34,6 +29,7 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
+	
 	<sub-flow name="getAccount\(ID)" doc:id="14228331-5f6c-463b-addb-6d94f16c65e9" >
 		<logger level="INFO" doc:name="Logger" doc:id="fbd3ac87-18cf-4b1d-8bcd-38ff7054ac9c" message="get:\dataBaseAccount:greenfleetsystem-config" />
 		<db:select doc:name="Select" doc:id="f65196a3-e4f5-46ed-958e-e8836c8f0cf7" config-ref="Database_Config">
@@ -54,6 +50,7 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
+	
 	<sub-flow name="getAccount\(ID)\vehicles" doc:id="f4144ecf-19c3-44f9-9e00-29be17a39821" >
 		<logger level="INFO" doc:name="Logger" doc:id="31a81cf1-322c-4bc7-bc7b-cd478f68224d" message="#[payload]" />
 		<db:select doc:name="Select" doc:id="f6484fe7-b6d4-4227-b502-eaa02636dd7e" config-ref="Database_Config">
@@ -69,7 +66,7 @@ AND (:status IS NULL OR status = :status);]]></db:sql>
   status: attributes.queryParams.status
 }]]]></db:input-parameters>
 		</db:select>
-		<validation:is-true doc:name="Is not empty" doc:id="faeeb0ef-8682-477b-85e5-f98f5ae6b03e" expression="#[!isEmpty(payload)]" message='"Não existem veiculos"'>
+		<validation:is-true doc:name="Is not empty" doc:id="faeeb0ef-8682-477b-85e5-f98f5ae6b03e" expression="#[!isEmpty(payload)]" message='"No vehicles found"'>
 			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
 		</validation:is-true>
 		<ee:transform doc:name="Transform Message" doc:id="fe72ab31-7a87-4a0f-9614-e95e5fdb9425">
@@ -81,6 +78,7 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
+	
 	<sub-flow name="postAccount" doc:id="c4f86bcc-ffe2-4fd1-8826-23fdc6de06a9" >
 		<logger level="INFO" doc:name="Logger" doc:id="d8afba64-02f5-4a35-9194-b51da727b175" />
 		<ee:transform doc:name="Transform Message" doc:id="bbc325fd-ffeb-44ec-b28d-6488e45d48c7">
@@ -129,6 +127,7 @@ VALUES (:id, :vehicleId, :description, :date, :status);]]></db:sql>
 			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
 		</db:insert>
 	</sub-flow>
+	
 	<sub-flow name="PostPartnerAccounts" doc:id="34290521-9e52-457d-9d31-dc9e08490af8" >
 		<set-variable variableName="accountsRows" value="#[payload.accountsRows default []]" />
 		<set-variable variableName="maintenanceRows" value="#[payload.maintenanceRows default []]" />
@@ -169,6 +168,7 @@ output application/json
     </ee:message>
   </ee:transform>
 	</sub-flow>
+	
 	<sub-flow name="weeklyMaintenanceCsvImplement" doc:id="0d95c161-de04-42c4-966f-6589e523e627" >
 		<set-variable variableName="outputDir" value="C:/Github/Greenfleet2-refact/reports/" doc:name="outputDir" />
 		<set-variable variableName="fileName" value='#["maintenance_" ++ (now() as String {format: "yyyy-MM-dd_HH-mm-ss"}) ++ ".csv"]' doc:name="fileName" />

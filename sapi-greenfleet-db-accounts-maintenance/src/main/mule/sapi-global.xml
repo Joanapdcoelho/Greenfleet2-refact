@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
-    <http:listener-config name="sapiGreenfleetHttpListener">
-        <http:listener-connection host="0.0.0.0" port="8083" />
-    </http:listener-config>
-    <apikit:config name="greenfleetsystem-config" api="resource::8447f95a-7ec8-4e54-affa-1ffc93d1beaf:greenfleetsystem:1.0.10:raml:zip:greenfleetsystem.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
     <db:config name="Database_Config" doc:name="Database Config" doc:id="2e5bb73f-fc7e-4010-a1a0-8c1524a1a517">
         <db:my-sql-connection host="localhost" port="3306" user="root" database="greenfleet1" />
     </db:config>
@@ -12,6 +9,16 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
         <http:request-connection host="localhost" port="8082" />
     </http:request-config>
 	<file:config name="File_Config" doc:name="File Config" doc:id="5b4c692f-c19c-4cff-beaa-3a76196d284a" >
-		<file:connection />
+		<file:connection workingDir="C:\Github\Greenfleet2-refact\reports\welcome"/>
 	</file:config>
+	<apikit:config outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" doc:name="Router" doc:id="c2882edf-6fcc-4180-8004-5845cc21a4c1" name="sapi-greenfleet-accounts-maintenance-config" api="resource::e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5:sapi-greenfleet-accounts-maintenance:1.0.1:raml:zip:sapi-greenfleet-accounts-maintenance.raml" />
+	<http:listener-config name="sapi-greenfleet-accounts-maintenance-httpListenerConfig" doc:name="HTTP Listener config" doc:id="1aa00736-088a-48d1-895b-81a4727a9001" >
+		<http:listener-connection host="localhost" port="8083" />
+	</http:listener-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="1dbfa8f5-9b55-4881-88b2-9c4755357677" >
+		<vm:connection />
+		<vm:queues >
+			<vm:queue queueName="welcome-new-account" />
+		</vm:queues>
+	</vm:config>
 </mule>

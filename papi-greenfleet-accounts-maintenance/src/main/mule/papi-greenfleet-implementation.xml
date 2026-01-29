@@ -5,11 +5,8 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:request-config name="HTTP_Request_configurationPartnerFleet" doc:name="HTTP Request configuration" doc:id="6d2307b1-7491-427c-964c-8a2f78480103" >
-		<http:request-connection host="localhost" port="8085" />
-	</http:request-config>
 	<flow name="getAccount" doc:id="ad62a7da-c825-4721-b0b3-cc81ae5136c7" >
-		<http:request method="GET" doc:name="Request" doc:id="b0640c33-114e-4f9b-b4b6-942709c0212a" config-ref="HTTP_Request_configuration" path="/api/account" />
+		<http:request method="GET" doc:name="Request" doc:id="b0640c33-114e-4f9b-b4b6-942709c0212a" config-ref="Sapi-HTTP_Request_configuration" path="/api/account" />
 		<logger level="INFO" doc:name="Logger" doc:id="ea87e5f1-9d54-4c9f-b3f0-482c05f1d170" message="#[payload]" />
 	</flow>
 	<flow name="postAccount" doc:id="33b89312-3ff0-488a-96d8-2143541ef91e" >
@@ -53,7 +50,7 @@ var accounts = payload
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<http:request method="POST" doc:name="Request" doc:id="73ecf55e-38cc-4515-9f46-fdd25f994939" config-ref="HTTP_Request_configuration1" path="/api/account" outputMimeType="application/json" responseTimeout="#[300000000000]" >
+		<http:request method="POST" doc:name="Request" doc:id="73ecf55e-38cc-4515-9f46-fdd25f994939" config-ref="Sapi-HTTP_Request_configuration" path="/api/account" outputMimeType="application/json" responseTimeout="#[300000000000]" >
 			<http:headers ><![CDATA[#[%dw 2.0
 output application/java
 ---
@@ -65,7 +62,7 @@ output application/java
 	</flow>
 	<flow name="postMaintenance" doc:id="bfe5b630-4a3e-4173-b4bf-f9a17501ca0c" >
 		<logger level="INFO" doc:name="Logger" doc:id="e49ed081-4a4e-4d26-af4f-8c68eed4f6ea" message="#[payload]" />
-		<http:request method="POST" doc:name="Request" doc:id="7ffce77f-3c5c-4083-b463-0a421781d404" config-ref="HTTP_Request_configuration1" path="/api/maintenance" outputMimeType="application/json" responseTimeout="#[3000000000]" >
+		<http:request method="POST" doc:name="Request" doc:id="7ffce77f-3c5c-4083-b463-0a421781d404" config-ref="Sapi-HTTP_Request_configuration" path="/api/maintenance" outputMimeType="application/json" responseTimeout="#[3000000000]" >
 			<http:headers ><![CDATA[#[%dw 2.0
 output application/java
 ---
@@ -75,9 +72,9 @@ output application/java
 }]]]></http:headers>
 		</http:request>
 	</flow>
-	<flow name="getAccount\(ID)\vehicles" doc:id="2c2f7609-ea46-4dbe-ace9-6425a8a2498b" >
+	<flow name="getAccount\(accountId)\vehicles" doc:id="2c2f7609-ea46-4dbe-ace9-6425a8a2498b" >
 		<logger level="INFO" doc:name="Logger" doc:id="77f540cd-edc6-4607-ace7-db79874dddda" />
-		<http:request method="GET" doc:name="Request" doc:id="774a639a-190c-4159-8f13-f88856c92791" config-ref="HTTP_Request_configuration" path="/api/account/{ID}/vehicles" responseTimeout="#[30000000000]" >
+		<http:request method="GET" doc:name="Request" doc:id="774a639a-190c-4159-8f13-f88856c92791" config-ref="Sapi-HTTP_Request_configuration" path="/api/account/{ID}/vehicles" responseTimeout="#[30000000000]" >
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
@@ -92,9 +89,9 @@ output application/java
 }]]]></http:query-params>
 		</http:request>
 	</flow>
-	<flow name="getAccount\(ID)" doc:id="7ffc58c3-d7fb-4d0a-9c5a-4546b83dfa5b" >
+	<flow name="getAccount\(accountId)" doc:id="7ffc58c3-d7fb-4d0a-9c5a-4546b83dfa5b" >
 		<logger level="INFO" doc:name="Logger" doc:id="6ee6fffd-c7f7-4ff8-a9ca-03d8ddedcbdb" />
-		<http:request method="GET" doc:name="Request" doc:id="f8b9f765-9eeb-4ed9-ab87-230ccc915604" config-ref="HTTP_Request_configuration" path="/api/account/{ID}" >
+		<http:request method="GET" doc:name="Request" doc:id="f8b9f765-9eeb-4ed9-ab87-230ccc915604" config-ref="Sapi-HTTP_Request_configuration" path="/api/account/{ID}" >
 			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
@@ -102,8 +99,8 @@ output application/java
 }]]]></http:uri-params>
 		</http:request>
 	</flow>
-	<flow name="getPartnerAccount" doc:id="db256572-7982-4ddd-bd97-8b954f989095" >
-		<http:request method="GET" doc:name="Request" doc:id="973d7515-0558-4454-bc4a-3a5a4ec00343" config-ref="HTTP_Request_configuration" path="/api/partner-accounts" responseTimeout="300"/>
+	<flow name="postPartnerAccount" doc:id="db256572-7982-4ddd-bd97-8b954f989095" >
+		<http:request method="GET" doc:name="Request" doc:id="973d7515-0558-4454-bc4a-3a5a4ec00343" config-ref="Sapi-HTTP_Request_configuration" path="/api/partner-accounts" responseTimeout="300"/>
 		<logger level="INFO" doc:name="Logger" doc:id="4eeaa156-3b22-49f2-bd16-2c8dafcb487e" />
 		<ee:transform doc:name="Transform Message" doc:id="ec693c08-bc81-4ea3-bee5-437a6cf50d22">
 			<ee:message>
@@ -125,6 +122,5 @@ payload.fleetData map (a) ->{
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="30f198b1-a619-4b14-be09-f2f0b9a87072" />
-		<!-- [STUDIO:"Scatter-Gather"]<scatter-gather doc:name="Scatter-Gather" doc:id="5aa0a1c4-71fc-4a5e-9fdd-1c4fcf55c510" /> [STUDIO] -->
 	</flow>
 </mule>

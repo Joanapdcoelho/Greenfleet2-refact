@@ -118,9 +118,9 @@
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
-			<groupId>8447f95a-7ec8-4e54-affa-1ffc93d1beaf</groupId>
-			<artifactId>greenfleet</artifactId>
-			<version>1.0.7</version>
+			<groupId>e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5</groupId>
+			<artifactId>xapi-greenfleet-accounts-maintenance</artifactId>
+			<version>1.0.1</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>
