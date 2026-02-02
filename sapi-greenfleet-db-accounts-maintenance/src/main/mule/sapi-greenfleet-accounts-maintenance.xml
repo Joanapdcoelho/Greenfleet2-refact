@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <flow name="sapi-greenfleet-accounts-maintenance-main">
+	<flow name="sapi-greenfleet-accounts-maintenance-main">
         <http:listener path="/api/*" config-ref="sapi-greenfleet-accounts-maintenance-httpListenerConfig">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
@@ -33,7 +33,7 @@ output application/json
                         <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
-				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable" doc:id="32bfa339-8116-40e6-9b5f-3c0031be5896" variableName="outboundHeaders" mimeType="application/json"/>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="outboundHeaders" doc:id="32bfa339-8116-40e6-9b5f-3c0031be5896" variableName="outboundHeaders" mimeType="application/json"/>
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_FOUND">
 				<set-variable value="404" doc:name="httpStatus" doc:id="f6203b2c-8101-4a22-bbb0-136fbbf7fc23" variableName="httpStatus" />
@@ -194,13 +194,13 @@ output application/json
 		<flow-ref doc:name="getAccount" doc:id="3743acd1-ccda-41bf-9f36-d005c43a388d" name="getAccount"/>
     </flow>
     <flow name="get:\account\(accountId)\vehicles:sapi-greenfleet-accounts-maintenance-config">
-		<flow-ref doc:name="getAccount\(ID)\vehicles" doc:id="cf068863-b6e0-4438-830d-bd8f15c3936f" name="getAccount\(ID)\vehicles"/>
+		<flow-ref doc:name="getAccount\(accountId)\vehicles" doc:id="cf068863-b6e0-4438-830d-bd8f15c3936f" name="getAccount\(accountId)\vehicles"/>
     </flow>
     <flow name="get:\account\(accountId):sapi-greenfleet-accounts-maintenance-config">
-		<flow-ref doc:name="getAccount\(ID)" doc:id="9369ee98-df67-48b3-9c5b-9a91f4044402" name="getAccount\(ID)"/>
+		<flow-ref doc:name="getAccount\(accountId)" doc:id="9369ee98-df67-48b3-9c5b-9a91f4044402" name="getAccount\(accountId)"/>
 		<error-handler >
 			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="834ef420-9290-4763-bda3-770111f6b903" type="APP:NOT_FOUND">
-				<set-variable value="404" doc:name="Set Variable" doc:id="d5718d54-a7da-4924-aaaf-0b250d370114" variableName="httpStatus"/>
+				<set-variable value="404" doc:name="httpStatus" doc:id="d5718d54-a7da-4924-aaaf-0b250d370114" variableName="httpStatus"/>
 				<ee:transform doc:name="Transform Message" doc:id="53161953-1c0d-4edd-bd59-599eb864b52e" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0

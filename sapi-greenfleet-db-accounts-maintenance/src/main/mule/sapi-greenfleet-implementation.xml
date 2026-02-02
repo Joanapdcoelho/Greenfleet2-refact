@@ -27,13 +27,13 @@ payload]]></ee:set-payload>
 		</ee:transform>
 	</sub-flow>
 	
-	<sub-flow name="getAccount\(ID)" doc:id="14228331-5f6c-463b-addb-6d94f16c65e9" >
-		<logger level="INFO" doc:name="Logger" doc:id="fbd3ac87-18cf-4b1d-8bcd-38ff7054ac9c" message="get:\dataBaseAccount:greenfleetsystem-config" />
+	<sub-flow name="getAccount\(accountId)" doc:id="14228331-5f6c-463b-addb-6d94f16c65e9" >
+		<logger level="INFO" doc:name="Logger" doc:id="fbd3ac87-18cf-4b1d-8bcd-38ff7054ac9c"/>
 		<db:select doc:name="Select" doc:id="f65196a3-e4f5-46ed-958e-e8836c8f0cf7" config-ref="Database_Config">
 			<db:sql><![CDATA[SELECT * 
 FROM accounts
 WHERE id = :id;]]></db:sql>
-			<db:input-parameters><![CDATA[#[{ id: attributes.uriParams.ID }]]]></db:input-parameters>
+			<db:input-parameters><![CDATA[#[{ id: attributes.uriParams.accountId }]]]></db:input-parameters>
 		</db:select>
 		<choice doc:name="Choice" doc:id="21656a17-6f72-48bd-96cc-92e0585a057d" >
 			<when expression="#[!isEmpty(payload)]">
@@ -51,7 +51,7 @@ payload]]></ee:set-payload>
 			</otherwise>
 		</choice>
 	</sub-flow>
-	<sub-flow name="getAccount\(ID)\vehicles" doc:id="f4144ecf-19c3-44f9-9e00-29be17a39821" >
+	<sub-flow name="getAccount\(accountId)\vehicles" doc:id="f4144ecf-19c3-44f9-9e00-29be17a39821" >
 		<logger level="INFO" doc:name="Logger" doc:id="31a81cf1-322c-4bc7-bc7b-cd478f68224d" message="#[payload]" />
 		<db:select doc:name="Select" doc:id="f6484fe7-b6d4-4227-b502-eaa02636dd7e" config-ref="Database_Config">
 			<db:sql><![CDATA[SELECT vehicle_id, brand, model, status
@@ -66,9 +66,6 @@ AND (:status IS NULL OR status = :status);]]></db:sql>
   status: attributes.queryParams.status
 }]]]></db:input-parameters>
 		</db:select>
-		<validation:is-true doc:name="Is not empty" doc:id="faeeb0ef-8682-477b-85e5-f98f5ae6b03e" expression="#[!isEmpty(payload)]" message='"No vehicles found"'>
-			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
-		</validation:is-true>
 		<ee:transform doc:name="Transform Message" doc:id="fe72ab31-7a87-4a0f-9614-e95e5fdb9425">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
