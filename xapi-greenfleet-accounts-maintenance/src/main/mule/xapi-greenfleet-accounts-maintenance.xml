@@ -134,4 +134,8 @@ output application/json
     <flow name="post:\maintenance:application\json:xapi-greenfleet-accounts-maintenance-config">
 		<flow-ref doc:name="postMaintenance" doc:id="50235330-069d-417e-a7d8-ca450c356a5f" name="postMaintenance"/>
     </flow>
+	<flow name="post-api-accounts2-main" doc:id="14c3405e-66ce-45e4-a051-3c675f951bbb" >
+		<http:listener doc:name="Listener" doc:id="afb93c57-c0e2-4d8e-a43d-1473d625c14b" config-ref="xapi-greenfleet-accounts-maintenance-httpListenerConfig" path="/api/accounts2"/>
+		<flow-ref doc:name="Flow Reference" doc:id="ade2e14b-fbd6-466e-8e74-fc072add77ae" name="Post-accounts2"/>
+	</flow>
 </mule>
