@@ -294,4 +294,10 @@ output application/json
         </ee:transform>
 		<flow-ref doc:name="postPartnerAccount" doc:id="662f5af9-080e-4a9f-a714-ad3f02897fe3" name="postPartnerAccount"/>
     </flow>
+    <flow name="papi-greenfleet-post-accounts2-main" doc:id="abb54c0f-fc84-47f1-9c37-9bfd3396f309" >
+		<http:listener doc:name="Papi-main" doc:id="16744667-e48a-4492-bab0-af33df2eb720" config-ref="papi-greenfleet-httpListenerConfig" path="/api/accounts2"/>
+		<logger level="INFO" doc:name="Logger" doc:id="aaddfa4d-8c52-422f-9bd2-c7d046a6c6ef" message="chamado"/>
+		<flow-ref doc:name="PostAccounts2" doc:id="a4dcc8fa-64e5-4fe6-8259-272bb6b59b60" name="postAccounts2-implement"/>
+	</flow>
+    
 </mule>

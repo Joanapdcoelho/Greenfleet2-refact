@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="723da334-697b-41a0-8bde-a74e45326369">
+		<vm:connection />
+		<vm:queues >
+			<vm:queue queueName="welcome-new-account" />
+		</vm:queues>
+	</vm:config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="bc00b0b0-7a7c-45b6-9b24-79ff601f15dd" >
+		<file:connection workingDir="C:\Github\Greenfleet2-refact\reports\welcome" />
+	</file:config>
 	<flow name="getAccount" doc:id="ad62a7da-c825-4721-b0b3-cc81ae5136c7" >
 		<http:request method="GET" doc:name="Request" doc:id="b0640c33-114e-4f9b-b4b6-942709c0212a" config-ref="Sapi-HTTP_Request_configuration" path="/api/account" />
 		<logger level="INFO" doc:name="Logger" doc:id="ea87e5f1-9d54-4c9f-b3f0-482c05f1d170" message="#[payload]" />
@@ -123,4 +136,67 @@ payload.fleetData map (a) ->{
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="30f198b1-a619-4b14-be09-f2f0b9a87072" />
 	</flow>
+	<sub-flow name="postAccounts2-implement" doc:id="78bc6e9c-94a1-4a47-9afc-ab0b372bbf75" >
+		<ee:transform doc:name="Transform Message" doc:id="9ed3d6c0-0efb-4388-a84c-c2455454b9b2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.id,
+  	name: payload.name,
+  	industry: payload.industry,
+  	country: payload.country,
+  	vehicle_id: payload.vehicle_id,
+  	brand: payload.brand,
+  	model: payload.model,
+  	status: payload.status
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request doc:name="Request" doc:id="1b5c1cd1-20c7-4337-914c-5b960657922a" method="POST" config-ref="Sapi-HTTP_Request_configuration" path="/accounts2" target="sapiResp"/>
+		<choice doc:name="Choice" doc:id="d4bce565-1be8-4d55-8ee3-63c772a7b035" >
+			<when expression="#[vars.sapiResp.accountId != null]">
+				<ee:transform doc:name="Transform Message" doc:id="75085d51-ab3f-4487-a486-27677706c22c">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  accountId: vars.sapiResp.accountId,
+  name: payload.name,
+  country: payload.country,
+  createdAt: (now() as String
+  	{format: "yyyy-MM-dd HH:mm:ss"})
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<vm:publish queueName="welcome-new-account" doc:name="Publish" doc:id="3c2fcc9c-33cb-4dab-8366-980d5866b4eb" config-ref="VM_Config"/>
+				<logger level="INFO" doc:name="Logger" doc:id="a5d654a1-60b5-460a-a25f-02fb08ba0443" message='#["Mensagem publicada na queue com sucesso. AccountId: " ++ vars.sapiResp.accountId]'/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="71e37e7e-b23f-43ee-9541-06e1c826b65f" message='#["Não foi possível publicar na queue, resposta da SAPI: " ++ write(vars.sapiResp, "application/json")]'/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<flow name="welcome-subscriber-flow" doc:id="6a25264c-4f76-4d00-ae1c-346e5eb1a89c" >
+		<vm:listener doc:name="Listener" doc:id="dc0c2a31-e41b-42a9-97c9-8d4833090856" config-ref="VM_Config" queueName="welcome-new-account"/>
+		<logger level="INFO" doc:name="Logger" doc:id="474241e2-3c85-40e2-b191-eeba7759a9ac" message='#["Recebida mensagem da queue. Payload: " ++  write(payload, "application/json")]'/>
+		<ee:transform doc:name="Transform Message" doc:id="cd24f0e0-d999-4d2e-98d1-87292a8012cf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="b8738458-3d4e-4b60-819d-f1f1bee87409" config-ref="File_Config" path='#["welcome/welcome_" ++ (payload.accountId as String) ++ "_" ++ (now() as String {format: "yyyy-MM-dd"}) ++ ".txt"]'>
+			<file:content ><![CDATA[#["Welcome, new account " ++ payload.name
+++ " AccountId: " ++ 
+payload.accountId
+++ " Country: " ++ payload.country
+++ " Created at: " ++ payload.createdAt]]]></file:content>
+		</file:write>
+	</flow>
+	
 </mule>
