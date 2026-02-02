@@ -25,8 +25,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<flow name="postAccount" doc:id="33b89312-3ff0-488a-96d8-2143541ef91e" >
 		<logger level="INFO" doc:name="Logger" doc:id="fd6f9bb1-ecba-4126-b558-3837ae0ad1e4" message="#[payload]" />
 		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="b771d74b-7b10-47f1-b996-700c7ec0884c" variableName="accountUser" mimeType="application/json" />
-		<flow-ref doc:name="Flow Reference" doc:id="c9a83c3b-3c11-4c56-a066-323e8560edcd" name="getAccount" />
-		<logger level="INFO" doc:name="Logger1" doc:id="895736be-4b63-4bc6-8ad4-39b3efb281d7" message="#[vars.accountuser]" />
+		<logger level="INFO" doc:name="Logger1" doc:id="895736be-4b63-4bc6-8ad4-39b3efb281d7" message="#[vars.accountUser]" />
 		<ee:transform doc:name="Transform Message" doc:id="f001519f-dbd1-4266-9d8d-273b52d395dd" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[
@@ -57,7 +56,7 @@ payload
 output application/json
 var accounts = payload
 ---
-(accounts ++ (vars.accountuser default [])) orderBy ((item) -> item.name)
+(accounts ++ (vars.accountUser default [])) orderBy ((item) -> item.name)
 
 
 ]]></ee:set-payload>

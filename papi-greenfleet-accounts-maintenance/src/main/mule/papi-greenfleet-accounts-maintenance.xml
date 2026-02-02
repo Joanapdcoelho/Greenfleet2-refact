@@ -13,59 +13,100 @@
         <apikit:router config-ref="papi-greenfleet-accounts-maintenance-config"/>
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+				<set-variable value="400" doc:name="httpStatus" doc:id="bc8fc408-a742-4e5f-a4fd-b01370ff9aa6" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message" doc:id="60417b49-cc57-4db4-b90e-2bf0ad972973" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Bad request"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Invalid request."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="outboundHeaders" doc:id="bf5c71c1-31e8-4d49-99d1-e097e275febb" variableName="outboundHeaders" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
+				<set-variable value="404" doc:name="httpStatus" doc:id="74bae207-7dc1-4b46-85e8-a8a53d20a96c" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Resource not found"}]]></ee:set-payload>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Resource not found."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="outboundHeaders" doc:id="75356b06-4dd2-48e6-9451-c824bb9bcca8" variableName="outboundHeaders" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+				<set-variable value="405" doc:name="httpStatus" doc:id="43fe8010-8f01-410b-bd98-ae3c9aaee397" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message" doc:id="5b82c4ec-ee56-46e1-b326-86566ee6aba5">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Method not allowed"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Method not allowed"),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="outboundHeaders" doc:id="fdd92279-4144-43ea-8c28-4471932ee295" variableName="outboundHeaders" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform doc:name="Transform Message">
+                <set-variable value="406" doc:name="httpStatus" doc:id="5f212927-a585-43ea-8257-8fe6cdda7472" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not acceptable"}]]></ee:set-payload>
+{
+	success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+	message: "Not acceptable",
+	correlationId: correlationId
+	}
+}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[406]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="outboundHeaders" doc:id="0a6a27d0-b04f-4497-b756-5e84dc1ff183" variableName="outboundHeaders" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform doc:name="Transform Message">
+                <set-variable value="406" doc:name="httpStatus" doc:id="6ce105c3-0bea-4881-9731-f8ccf2bfb1dc" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -221,11 +262,6 @@ output application/json
 		<flow-ref doc:name="getAccount\(accountId)\vehicles" doc:id="c962d8fc-b2f0-41fc-b84f-04017c091c6e" name="getAccount\(accountId)\vehicles"/>
     </flow>
     <flow name="get:\account\(accountId):papi-greenfleet-accounts-maintenance-config">
-        <ee:transform doc:name="Transform Message">
-            <ee:variables>
-                <ee:set-variable variableName="accountId">attributes.uriParams.'accountId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
