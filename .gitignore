@@ -36,3 +36,15 @@ Thumbs.db
 # Anypoint local runtime downloads
 **/.mule-soft/
 *.wev
+
+# Build
+target/
+**/target/
+
+# Logs e temporários
+*.log
+*.tmp
+*.bak
+*.wev
+
+
