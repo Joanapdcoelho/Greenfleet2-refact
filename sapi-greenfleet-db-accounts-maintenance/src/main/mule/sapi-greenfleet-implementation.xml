@@ -17,9 +17,6 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
 		<db:select doc:name="Select" doc:id="eb431969-9519-4903-ad16-785044d361f8" config-ref="Database_Config">
 			<db:sql><![CDATA[SELECT * FROM Accounts]]></db:sql>
 		</db:select>
-		<validation:is-true doc:name="Is not empty" doc:id="41511c22-e488-4a53-b4ae-0e114f5d1aa4" expression="#[!isEmpty(payload)]" message='"No accounts found"'>
-			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
-		</validation:is-true>
 		<ee:transform doc:name="Transform Message" doc:id="83298bbc-fe56-4c5d-af3b-fdc9108fe052">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -38,10 +35,9 @@ FROM accounts
 WHERE id = :id;]]></db:sql>
 			<db:input-parameters><![CDATA[#[{ id: attributes.uriParams.ID }]]]></db:input-parameters>
 		</db:select>
-		<validation:is-true doc:name="Is not empty" doc:id="14975bb8-5835-4456-87a7-f8ebdb3b266f" expression="#[!isEmpty(payload)]" message='"Não existem contas"'>
-			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_ACCOUNT" />
-		</validation:is-true>
-		<ee:transform doc:name="Transform Message" doc:id="6f5c0464-de83-4139-8e9e-508ffaa0834d">
+		<choice doc:name="Choice" doc:id="21656a17-6f72-48bd-96cc-92e0585a057d" >
+			<when expression="#[!isEmpty(payload)]">
+				<ee:transform doc:name="Transform Message" doc:id="6f5c0464-de83-4139-8e9e-508ffaa0834d">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -49,8 +45,12 @@ output application/json
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+			</when>
+			<otherwise >
+				<raise-error doc:name="Raise error" doc:id="c3c4fc66-c23c-4433-9534-f27c6580fbb1" type="APP:NOT_FOUND" description="Account not found"/>
+			</otherwise>
+		</choice>
 	</sub-flow>
-	
 	<sub-flow name="getAccount\(ID)\vehicles" doc:id="f4144ecf-19c3-44f9-9e00-29be17a39821" >
 		<logger level="INFO" doc:name="Logger" doc:id="31a81cf1-322c-4bc7-bc7b-cd478f68224d" message="#[payload]" />
 		<db:select doc:name="Select" doc:id="f6484fe7-b6d4-4227-b502-eaa02636dd7e" config-ref="Database_Config">
@@ -127,7 +127,6 @@ VALUES (:id, :vehicleId, :description, :date, :status);]]></db:sql>
 			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
 		</db:insert>
 	</sub-flow>
-	
 	<sub-flow name="PostPartnerAccounts" doc:id="34290521-9e52-457d-9d31-dc9e08490af8" >
 		<set-variable variableName="accountsRows" value="#[payload.accountsRows default []]" />
 		<set-variable variableName="maintenanceRows" value="#[payload.maintenanceRows default []]" />
@@ -168,10 +167,9 @@ output application/json
     </ee:message>
   </ee:transform>
 	</sub-flow>
-	
 	<sub-flow name="weeklyMaintenanceCsvImplement" doc:id="0d95c161-de04-42c4-966f-6589e523e627" >
 		<set-variable variableName="outputDir" value="C:/Github/Greenfleet2-refact/reports/" doc:name="outputDir" />
-		<set-variable variableName="fileName" value='#["maintenance_" ++ (now() as String {format: "yyyy-MM-dd_HH-mm-ss"}) ++ ".csv"]' doc:name="fileName" />
+		<set-variable variableName="fileName" value='#["maintenance_" ++ (now() as String {format: "yyyy-MM-dd"}) ++ ".csv"]' doc:name="fileName" />
 		<set-variable variableName="reportDate" value='#[now() as String {format: "yyyy-MM-dd"}]' doc:name="reportDate" />
 		<set-variable value="#[vars.outputDir ++ vars.fileName]" doc:name="fullPath" doc:id="453a53e8-d9db-43f0-ae28-aade134d1a79" variableName="fullPath" />
 		<db:select doc:name="accounts and maintenance" config-ref="Database_Config">
@@ -234,7 +232,7 @@ output application/json
   accountId: vars.originalAccount.id,
   name: vars.originalAccount.name,
   country: vars.originalAccount.country,
-  createdAt: now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
+  createdAt: now() as String {format: "yyyy-MM-dd"}
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>

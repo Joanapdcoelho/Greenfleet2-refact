@@ -13,84 +13,143 @@
         <apikit:router config-ref="sapi-greenfleet-accounts-maintenance-config"/>
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <set-variable value="" doc:name="Set Variable" doc:id="af63eab8-7c03-423d-ac0e-4089bff7b01e" variableName="httpStatus"/>
+                <set-variable value="400" doc:name="httpStatus" doc:id="af63eab8-7c03-423d-ac0e-4089bff7b01e" variableName="httpStatus"/>
+				<ee:transform doc:name="Transform Message">
+                    <ee:message>
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Invalid request."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable" doc:id="32bfa339-8116-40e6-9b5f-3c0031be5896" variableName="outboundHeaders" mimeType="application/json"/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+				<set-variable value="404" doc:name="httpStatus" doc:id="f6203b2c-8101-4a22-bbb0-136fbbf7fc23" variableName="httpStatus" />
 				<ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Bad request"}]]></ee:set-payload>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Resource not found."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
-				<set-variable value="" doc:name="Set Variable" doc:id="32bfa339-8116-40e6-9b5f-3c0031be5896" variableName="outboundHeaders" mimeType="application/json"/>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable1" doc:id="20ad5459-7fe9-4df6-af4f-14e3a541e6e8" variableName="outboundHeaders" mimeType="application/json" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform doc:name="Transform Message">
+                <set-variable value="405" doc:name="httpStatus" doc:id="5e4534c5-b25d-4f3a-bc15-70ee2a2a55e4" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Method not allowed"}]]></ee:set-payload>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Method not allowed."),
+    correlationId: correlationId
+  }
+}
+]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[405]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable1" doc:id="dcb9615a-6f59-4ff0-a2aa-0a3919eb4663" variableName="outboundHeaders" mimeType="application/json" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform doc:name="Transform Message">
+                <set-variable value="406" doc:name="httpStatus" doc:id="dc76c44c-a2e2-468a-9490-fefc71c606ed" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not acceptable"}]]></ee:set-payload>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Not acceptable."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[406]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable1" doc:id="98bed933-13fe-49c3-8938-d18abeec708b" variableName="outboundHeaders" mimeType="application/json" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform doc:name="Transform Message">
+                <set-variable value="415" doc:name="httpStatus" doc:id="23281de9-8593-4862-8e5e-2703cd7d855a" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Unsupported media type"}]]></ee:set-payload>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Unsupported media type."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable1" doc:id="42963325-53e3-436e-870b-e67a4baf411b" variableName="outboundHeaders" mimeType="application/json" />
             </on-error-propagate>
             <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform doc:name="Transform Message">
+                <set-variable value="501" doc:name="httpStatus" doc:id="d1017725-ff6a-4ca3-bf07-181837ed4617" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Not Implemented"}]]></ee:set-payload>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Not implemented."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable1" doc:id="5af6ed22-224a-4cb3-b4ec-5bf202d3d6c7" variableName="outboundHeaders" mimeType="application/json" />
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -107,17 +166,27 @@ output application/json
         <apikit:console config-ref="sapi-greenfleet-accounts-maintenance-config"/>
         <error-handler>
             <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+				<set-variable value="404" doc:name="httpStatus" doc:id="97c629b0-1687-44e3-bc53-0d4fed7cc51b" variableName="httpStatus" />
+				<ee:transform doc:name="Transform Message1" doc:id="188c00e0-2531-4d08-a13d-cdac266d7aea" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Resource not found."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable1" doc:id="0c746409-695f-484f-911e-c0abce6ea4fa" variableName="outboundHeaders" mimeType="application/json" />
             </on-error-propagate>
         </error-handler>
     </flow>
@@ -129,6 +198,21 @@ output application/json
     </flow>
     <flow name="get:\account\(accountId):sapi-greenfleet-accounts-maintenance-config">
 		<flow-ref doc:name="getAccount\(ID)" doc:id="9369ee98-df67-48b3-9c5b-9a91f4044402" name="getAccount\(ID)"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="834ef420-9290-4763-bda3-770111f6b903" type="APP:NOT_FOUND">
+				<set-variable value="404" doc:name="Set Variable" doc:id="d5718d54-a7da-4924-aaaf-0b250d370114" variableName="httpStatus"/>
+				<ee:transform doc:name="Transform Message" doc:id="53161953-1c0d-4edd-bd59-599eb864b52e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: error.description default "Account not found."
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
     </flow>
     <flow name="post:\account:application\json:sapi-greenfleet-accounts-maintenance-config">
 		<ee:transform doc:name="Transform Message">
@@ -168,11 +252,53 @@ output application/json
             </ee:message>
         </ee:transform>
 		<flow-ref doc:name="PostPartnerAccounts" doc:id="51341f31-2c12-4048-8873-caced6a3ec5b" name="PostPartnerAccounts"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5e34afd3-545b-4a4d-a3ef-d051a123f499" type="APIKIT: BAD_REQUEST">
+				<set-variable value="400" doc:name="httpStatus" doc:id="b148e84c-1731-4c69-b1d8-ba2a1452d635" variableName="httpStatus"/>
+				<ee:transform doc:name="Transform Message" doc:id="0b47cd79-03b6-418f-b19d-233dc0164f55" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "Bad request."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable" doc:id="ae3049b3-1583-4bab-9c8b-3ef1b934bd1c" variableName="outboundHeaders"/>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="84791d6d-6ea6-4b8c-898d-4611bf2c3d28" type="DB:*">
+				<set-variable value="500" doc:name="httpStatus" doc:id="18c29921-4382-4622-baa1-52996b4b4876" variableName="httpStatus"/>
+				<ee:transform doc:name="Transform Message" doc:id="fe303a96-ef3a-4eec-bc5a-ef55f6046016" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  success: false,
+  error: {
+    httpStatus: vars.httpStatus,
+    errorType: (error.errorType as String),
+    message: (error.description default "DB error."),
+    correlationId: correlationId
+  }
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<set-variable value='#[{&#10;  "Content-Type": "application/json",&#10;  "x-correlation-id": correlationId&#10;}]' doc:name="Set Variable" doc:id="39b4b435-f439-4547-b92c-c036ab7c43c3" variableName="outboundHeaders"/>
+			</on-error-propagate>
+		</error-handler>
     </flow>
 	<flow name="weeklyMaintenanceCsvMain" doc:id="a1e18938-8557-44c7-a08d-0d37503f4cf2" >
 		<scheduler doc:name="Scheduler" doc:id="28b4a745-3b6b-4742-a6a1-cda362121db5" >
 			<scheduling-strategy >
-				<fixed-frequency frequency="30000" startDelay="5000" />
+				<cron expression="0 0 9 ? * SUN" timeZone="Europe/Lisbon" />
 			</scheduling-strategy>
 		</scheduler>
 		<flow-ref doc:name="weeklyMaintenanceCsvImplement" doc:id="df6e290a-5eae-4692-a125-debc56f9cf66" name="weeklyMaintenanceCsvImplement"/>
