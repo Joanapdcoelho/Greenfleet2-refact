@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<munit:config name="getAccountById_test.xml" />
+	<flow name="getAccountById_testFlow" doc:id="725c1dc1-8e0f-49d1-9696-5e406d263bbf" >
+		<munit:set-event doc:name="Set Event" doc:id="265c2392-b634-40d4-828e-d202064785a1" >
+			<munit:attributes value='#[{&#10;	uriParams: {&#10;		accountId: "A003"&#10;	}&#10;}]' />
+		</munit:set-event>
+	</flow>
+	<munit:test name="getAccountById_test-get:\account\(accountId):sapi-greenfleet-accounts-maintenance-configTest" doc:id="091cb18b-f533-472f-b6a6-2973a4367058" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d03441c4-2d3d-4566-b31c-c2409ef7bc4b" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    id: "A003",&#10;    name: "UrbanDrive Services",&#10;    industry: "Car Sharing",&#10;    country: "France",&#10;    vehicle_id: "V105",&#10;    brand: "Hyundai",&#10;    model: "Kona Electric",&#10;    status: "available"&#10;  }]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\account\(accountId):sapi-greenfleet-accounts-maintenance-config" doc:id="950c85c7-3dc4-4125-bca9-3866a34c0c9e" name="get:\account\(accountId):sapi-greenfleet-accounts-maintenance-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="918019b8-597f-40ef-850a-ee985a89e0f4" message="Payload should not be empty when accounts exists" expression='#[payload != null]' is="#[MunitTools::equalTo(true)]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="ab53b312-5d76-46e1-b087-90e26a8ecb34" expression="#[payload.id]" is='#[MunitTools::equalTo("A003")]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
