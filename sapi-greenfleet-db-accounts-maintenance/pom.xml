@@ -149,7 +149,7 @@
 		<dependency>
 			<groupId>e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5</groupId>
 			<artifactId>sapi-greenfleet-accounts-maintenance</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
 		</dependency>
