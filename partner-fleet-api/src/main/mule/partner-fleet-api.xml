@@ -10,7 +10,7 @@
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="partner-fleet-api-config"/>
+        <apikit:router config-ref="partner-fleet-api-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform doc:name="Transform Message">
@@ -102,7 +102,7 @@ output application/json
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:console config-ref="partner-fleet-api-config"/>
+        <apikit:console config-ref="partner-fleet-api-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:NOT_FOUND">
                 <ee:transform doc:name="Transform Message">
@@ -166,6 +166,6 @@ output application/json
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-		<flow-ref doc:name="getPartnerAccount" doc:id="975d0dd9-607f-42cf-9744-beaf1d01f186" name="getPartnerAccount"/>
+        <flow-ref doc:name="getPartnerAccount" doc:id="975d0dd9-607f-42cf-9744-beaf1d01f186" name="getPartnerAccount" />
     </flow>
 </mule>
