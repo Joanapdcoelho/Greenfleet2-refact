@@ -106,13 +106,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5</groupId>
-			<artifactId>papi-greenfleet-accounts-maintenance</artifactId>
-			<version>1.0.3</version>
-			<classifier>raml</classifier>
-			<type>zip</type>
-		</dependency>
-		<dependency>
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-vm-connector</artifactId>
 			<version>2.0.1</version>
@@ -129,6 +122,13 @@
 			<artifactId>mule-file-connector</artifactId>
 			<version>1.5.5</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>e3fe7a1b-93ce-4e67-8145-3fc9e04b71e5</groupId>
+			<artifactId>papi-greenfleet-accounts-maintenance</artifactId>
+			<version>1.0.4</version>
+			<classifier>raml</classifier>
+			<type>zip</type>
 		</dependency>
 	</dependencies>
 
